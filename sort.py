@@ -1,4 +1,5 @@
 import time
+import os
 
 NB_EXEMPLAIRES_SERIE_1 = 1000
 NB_EXEMPLAIRES_SERIE_2 = 5000
@@ -9,7 +10,8 @@ NB_EXEMPLAIRES_SERIE_6 = 500000
 
 def triParDenombrement(nNombres, iEnsemble):
     compteur_fichier_ensemble_1 = 0 
-    nom_fichier_ensemble_1 = "testset_" +  str(NB_EXEMPLAIRES_SERIE_1) + "_" + str(compteur_fichier_ensemble_1) + ".txt"
+    # print(os.getcwd()) = C:\Users\Joel\Desktop\inf8775
+    nom_fichier_ensemble_1 = os.getcwd() + "/tp1/tp1-H19/exemplaires/testset_" +  str(NB_EXEMPLAIRES_SERIE_1) + "_" + str(compteur_fichier_ensemble_1) + ".txt"
     with open(nom_fichier_ensemble_1) as f:
         tableau_lu = f.readlines()
         tableau_lu = [int(x.strip()) for x in tableau_lu]
@@ -22,9 +24,8 @@ def triParDenombrement(nNombres, iEnsemble):
     for indice in range(len(nouveau_tableau)):
         for i in range(nouveau_tableau[indice]):
             result += str(indice) + ", "
-    print(result)
-    # print(nouveau_tableau)
-    # sonde_temporelle_debut = timeit.it() 
+    sonde_temporelle_end = time.time() 
+    print( str ( (sonde_temporelle_end - sonde_temporelle_debut) * 1000 ) + " ms" )
 
 if __name__ == '__main__':
     triParDenombrement(1000, 0)
