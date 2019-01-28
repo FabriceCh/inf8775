@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <utility>
+#include <string>
 
 using namespace std;
 
@@ -25,6 +26,18 @@ void triRapide(int tableau_lu[], int pointeur_gauche, int pointeur_droit){
     }
 }
 
+void triParDenombrement(int tableau_lu[]){
+    int nouveau_tableau[1000];
+    for (int i = 0; i < 1000; i++){
+        nouveau_tableau[i] += 1;
+    }
+    for(int i = 0; i < 1000; i++){
+        for (int j = 0; j < nouveau_tableau[i]; j++){
+            cout << i << ", ";
+        }
+    }
+}
+
 int main() {
     int tableau_lu[1000];
     ifstream fichier;
@@ -45,4 +58,5 @@ int main() {
     for (int i = 0; i < 1000; i++) {
         cout << tableau_lu[i] << ", ";
     }
+    return 0;
 }
