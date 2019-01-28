@@ -1,0 +1,1 @@
+/usr/bin/c++.exe -g  -Wl,--enable-auto-import CMakeFiles/tp1_H19.dir/main.cpp.o  -o tp1_H19.exe -Wl,--out-implib,libtp1_H19.dll.a -Wl,--major-image-version,0,--minor-image-version,0 
