@@ -1,6 +1,6 @@
 C:\Users\Joel\.CLion2018.3\system\cygwin_cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19
--- The C compiler identification is GNU 7.3.0
--- The CXX compiler identification is GNU 7.3.0
+-- The C compiler identification is GNU 7.4.0
+-- The CXX compiler identification is GNU 7.4.0
 -- Check for working C compiler: /usr/bin/cc
 -- Check for working C compiler: /usr/bin/cc -- works
 -- Detecting C compiler ABI info
