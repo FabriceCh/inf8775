@@ -39,8 +39,8 @@ int main() {
         compteur++;
     }
     fichier.close();
-    int pointeur_gauche = 1;
-    int pointeur_droit = 999;
+    int pointeur_gauche = 0;
+    int pointeur_droit = 1000;
     triRapide(tableau_lu, pointeur_gauche, pointeur_droit);
     for (int i = 0; i < 1000; i++) {
         cout << tableau_lu[i] << ", ";
