@@ -8,13 +8,17 @@ NB_EXEMPLAIRES_SERIE_4 = 50000
 NB_EXEMPLAIRES_SERIE_5 = 100000
 NB_EXEMPLAIRES_SERIE_6 = 500000
 
-def triParDenombrement(nNombres, iEnsemble):
+def chargerDonnees():
     compteur_fichier_ensemble_1 = 0 
     # print(os.getcwd()) = C:\Users\Joel\Desktop\inf8775
     nom_fichier_ensemble_1 = os.getcwd() + "/exemplaires/testset_" +  str(NB_EXEMPLAIRES_SERIE_1) + "_" + str(compteur_fichier_ensemble_1) + ".txt"
     with open(nom_fichier_ensemble_1) as f:
         tableau_lu = f.readlines()
         tableau_lu = [int(x.strip()) for x in tableau_lu]
+        return tableau_lu
+
+def triParDenombrement(nNombres, iEnsemble):
+    tableau_lu = chargerDonnees()
     sonde_temporelle_debut = time.time() 
     taille_nouveau_tableau = max(tableau_lu)
     nouveau_tableau = [0] * taille_nouveau_tableau
