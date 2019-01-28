@@ -1,5 +1,7 @@
 import time
 import os
+import math
+import sys
 
 NB_EXEMPLAIRES_SERIE_1 = 1000
 NB_EXEMPLAIRES_SERIE_2 = 5000
@@ -7,10 +9,10 @@ NB_EXEMPLAIRES_SERIE_3 = 10000
 NB_EXEMPLAIRES_SERIE_4 = 50000
 NB_EXEMPLAIRES_SERIE_5 = 100000
 NB_EXEMPLAIRES_SERIE_6 = 500000
+sys.setrecursionlimit(10000)
 
 def chargerDonnees():
     compteur_fichier_ensemble_1 = 0 
-    # print(os.getcwd()) = C:\Users\Joel\Desktop\inf8775
     nom_fichier_ensemble_1 = os.getcwd() + "/exemplaires/testset_" +  str(NB_EXEMPLAIRES_SERIE_1) + "_" + str(compteur_fichier_ensemble_1) + ".txt"
     with open(nom_fichier_ensemble_1) as f:
         tableau_lu = f.readlines()
@@ -31,6 +33,38 @@ def triParDenombrement(nNombres, iEnsemble):
     sonde_temporelle_end = time.time() 
     print( str ( (sonde_temporelle_end - sonde_temporelle_debut) * 1000 ) + " ms" )
 
+def triRapideRechercheRecursive(tableau_lu, pointeur_gauche, pointeur_droit, pivot):
+    if pointeur_droit == pointeur_gauche - 1:
+        tableau_lu[pivot], tableau_lu[pointeur_droit] = tableau_lu[pointeur_droit], tableau_lu[pivot]
+        return
+    for i in range(len(tableau_lu)):
+        if tableau_lu[pointeur_gauche] < pivot:
+            pointeur_gauche += 1
+        else:
+            pointeur_gauche = i
+        if tableau_lu[pointeur_droit - 1] > pivot:
+            pointeur_droit -= 1
+        else:
+            pointeur_droit = i
+    triRapideRechercheRecursive(tableau_lu, pointeur_gauche, pointeur_droit, pivot)
+
+
+def triRapidePivotSPremierSeuilUn():
+    tableau_lu = chargerDonnees()
+    sonde_temporelle_debut = time.time() 
+    taille_nouveau_tableau = max(tableau_lu)
+    pivot = tableau_lu[0]
+    # Le pivot est le premier élément.
+    pointeur_gauche = 1;
+    pointeur_droit = max(tableau_lu)
+    tableau = triRapideRechercheRecursive(tableau_lu, pointeur_gauche, pointeur_droit, pivot)
+    print(tableau)
+
 if __name__ == '__main__':
-    triParDenombrement(1000, 0)
+    # print("Tri par denombement")
+    # triParDenombrement(1000, 0)
+    print("Tri rapide, seuil de recursivite 1")
+    triRapidePivotSPremierSeuilUn()
+
+
 
