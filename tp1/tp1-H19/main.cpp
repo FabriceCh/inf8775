@@ -10,6 +10,12 @@
 // quicksort implementation taken from https://stackoverflow.com/questions/31720408/how-to-make-quick-sort-recursive
 using namespace std;
 
+void printVector(vector<int> vector) {
+	for (unsigned int i = 0; i < vector.size(); i++) {
+		cout << vector[i] << " ";
+	}
+}
+
 int partition(vector<int> & vector, int low, int high) {
 	int pivot = vector[high];    //taking the last element as pivot
 	int i = (low - 1);
@@ -35,19 +41,43 @@ void quickSort(vector<int> & vector, int low, int high) {
 	}
 }
 
-void triParDenombrement(int tableau_lu[]) {
-	int nouveau_tableau[1000];
-	for (int i = 0; i < 1000; i++) {
-		nouveau_tableau[i] += 1;
+void triParDenombrement(vector<int> & vector) {
+	const int max_value = *max_element(vector.begin(), vector.end());
+	std::vector<int> valueCounters;
+	std::vector<int> sortedVector;
+	//initialize a vector the size of the largest element 
+	for (int i = 0; i < max_value; i++) {
+		valueCounters.push_back(0);
 	}
-	for (int i = 0; i < 1000; i++) {
-		for (int j = 0; j < nouveau_tableau[i]; j++) {
-			cout << i << ", ";
+	//fill the new vector with the amount of each number from the initial set
+	for (unsigned int i = 0; i < vector.size(); i++) {
+		valueCounters[vector[i] - 1] ++;
+	}
+	//reconstruct the initial vector with the counted values 
+	for (unsigned int i = 0; i < valueCounters.size(); i++) {
+		for (int j = 0; j < valueCounters[i]; j++) {
+			sortedVector.push_back(i + 1);
 		}
 	}
+	vector = sortedVector;
 }
 
-vector<int> readNumbers(const char* filename) {
+vector<int> sortNumbers(vector<int> vector, string desired_sorting) {
+	int pointeur_gauche = 0;
+	int pointeur_droit = vector.size() - 1;
+	if (desired_sorting == "counting") {
+		triParDenombrement(vector);
+	} else if (desired_sorting == "quick") {
+		quickSort(vector, pointeur_gauche, pointeur_droit);
+	} else if (desired_sorting == "quickSeuil") {
+		quickSort(vector, pointeur_gauche, pointeur_droit);
+	} else if (desired_sorting == "quickRandomSeuil") {
+		quickSort(vector, pointeur_gauche, pointeur_droit);
+	}
+	return vector;
+}
+
+vector<int> readNumbers(const string filename) {
 	vector<int> vector;
 	ifstream fichier;
 	unsigned int nombre;
@@ -65,23 +95,18 @@ vector<int> readNumbers(const char* filename) {
 }
 
 int main() {
-	vector<int> vector;
+	vector<int> initial_vector;
 	ifstream fichier;
 	unsigned int nombre;
-	const char* filename = "./exemplaires/testset_1000_0.txt";
-	vector = readNumbers(filename);
+	const string filename = "./exemplaires/testset_1000_0.txt";
+	initial_vector = readNumbers(filename);
 
 // for tests:
-	//vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21 };
+	//initial_vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21 };
 
-	int pointeur_gauche = 0;
-	int pointeur_droit = vector.size() - 1;
+	vector<int> sorted_vector = sortNumbers(initial_vector, "counting");
 
-	quickSort(vector, pointeur_gauche, pointeur_droit);
-
-	for (unsigned int i = 0; i < vector.size(); i++) {
-			cout << vector[i] << ", ";
-	}
+	printVector(sorted_vector);
 
 	cin >> nombre;
 	return 0;
