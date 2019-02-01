@@ -1,62 +1,88 @@
+
 #include <iostream>
 #include <fstream>
 #include <utility>
 #include <string>
+#include <cstdio>
+#include <algorithm>
+#include <vector>
 
+// quicksort implementation taken from https://stackoverflow.com/questions/31720408/how-to-make-quick-sort-recursive
 using namespace std;
 
-int triRapideRecursif(int tableau_lu[], int pointeur_gauche, int pointeur_droit){
-    int pivot = tableau_lu[pointeur_droit];
-    int i = (pointeur_gauche - 1);
-    for (int j = pointeur_gauche; j <= pointeur_droit - 1; j++){
-        if (tableau_lu[j] <= pivot){
-            i++;
-            swap(tableau_lu[i], tableau_lu[j]);
-        }
-    }
-    swap(tableau_lu[i + 1], tableau_lu[pointeur_droit]);
-    return (i + 1);
+int partition(vector<int> & vector, int low, int high) {
+	int pivot = vector[high];    //taking the last element as pivot
+	int i = (low - 1);
+	for (int j = low; j <= high - 1; j++) {
+		// If current element is smaller than or
+		// equal to pivot
+		if (vector[j] <= pivot) {
+			i++;
+			//swap(vector[i], vector[j]);
+			iter_swap(vector.begin() + i, vector.begin() + j);
+		}
+	}
+	//swap(arr[i + 1], arr[high]);
+	iter_swap(vector.begin() + (i + 1), vector.begin() + high);
+	return (i + 1);
 }
 
-void triRapide(int tableau_lu[], int pointeur_gauche, int pointeur_droit){
-    int pivot = triRapideRecursif(tableau_lu, pointeur_gauche, pointeur_droit);
-    if (pointeur_gauche < pointeur_droit){
-        triRapide(tableau_lu, pointeur_gauche, pivot - 1);
-        triRapide(tableau_lu, pivot + 1, pointeur_droit);
-    }
+void quickSort(vector<int> & vector, int low, int high) {
+	if (low < high) {
+		int pi = partition(vector, low, high);
+		quickSort(vector, low, pi - 1);
+		quickSort(vector, pi + 1, high);
+	}
 }
 
-void triParDenombrement(int tableau_lu[]){
-    int nouveau_tableau[1000];
-    for (int i = 0; i < 1000; i++){
-        nouveau_tableau[i] += 1;
-    }
-    for(int i = 0; i < 1000; i++){
-        for (int j = 0; j < nouveau_tableau[i]; j++){
-            cout << i << ", ";
-        }
-    }
+void triParDenombrement(int tableau_lu[]) {
+	int nouveau_tableau[1000];
+	for (int i = 0; i < 1000; i++) {
+		nouveau_tableau[i] += 1;
+	}
+	for (int i = 0; i < 1000; i++) {
+		for (int j = 0; j < nouveau_tableau[i]; j++) {
+			cout << i << ", ";
+		}
+	}
+}
+
+vector<int> readNumbers(const char* filename) {
+	vector<int> vector;
+	ifstream fichier;
+	unsigned int nombre;
+	fichier.open(filename);
+	if (!fichier) {
+		cerr << "Error opening file";
+	}
+	unsigned int compteur = 0;
+	while (fichier >> nombre && !fichier.eof()) {
+		vector.push_back(nombre);
+		compteur++;
+	}
+	fichier.close();
+	return vector;
 }
 
 int main() {
-    int tableau_lu[1000];
-    ifstream fichier;
-    unsigned int nombre;
-    fichier.open("../exemplaires//testset_1000_0.txt");
-    if(!fichier){
-        cerr << "Error opening file";
-    }
-    unsigned int compteur = 0;
-    while (fichier >> nombre){
-        tableau_lu[compteur] = nombre;
-        compteur++;
-    }
-    fichier.close();
-    int pointeur_gauche = 0;
-    int pointeur_droit = 1000;
-    triRapide(tableau_lu, pointeur_gauche, pointeur_droit);
-    for (int i = 0; i < 1000; i++) {
-        cout << tableau_lu[i] << ", ";
-    }
-    return 0;
+	vector<int> vector;
+	ifstream fichier;
+	unsigned int nombre;
+	const char* filename = "./exemplaires/testset_1000_0.txt";
+	vector = readNumbers(filename);
+
+// for tests:
+	//vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21 };
+
+	int pointeur_gauche = 0;
+	int pointeur_droit = vector.size() - 1;
+
+	quickSort(vector, pointeur_gauche, pointeur_droit);
+
+	for (unsigned int i = 0; i < vector.size(); i++) {
+			cout << vector[i] << ", ";
+	}
+
+	cin >> nombre;
+	return 0;
 }
