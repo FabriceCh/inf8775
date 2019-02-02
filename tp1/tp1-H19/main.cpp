@@ -214,7 +214,7 @@ void compareAll(vector<int> init_vec) {
 		mean += timeInMs;
 	}
 	mean /= 10;
-	cout << "Mean elapsed time (quickRdmSeuil): " << mean
+	cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
 }
 
 int main() {
