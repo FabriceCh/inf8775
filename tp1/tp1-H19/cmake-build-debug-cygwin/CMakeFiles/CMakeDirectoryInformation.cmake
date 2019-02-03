@@ -3,7 +3,7 @@
 
 # Relative path conversion top directories.
 set(CMAKE_RELATIVE_PATH_TOP_SOURCE "/cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19")
-set(CMAKE_RELATIVE_PATH_TOP_BINARY "/cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug")
+set(CMAKE_RELATIVE_PATH_TOP_BINARY "/cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug-cygwin")
 
 # Force unix paths in dependencies.
 set(CMAKE_FORCE_UNIX_PATHS 1)

@@ -1,3 +1,0 @@
-/cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug/CMakeFiles/tp1_H19.dir
-/cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug/CMakeFiles/edit_cache.dir

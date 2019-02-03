@@ -15,4 +15,4 @@ C:\Users\Joel\.CLion2018.3\system\cygwin_cmake\bin\cmake.exe -DCMAKE_BUILD_TYPE=
 -- Detecting CXX compile features - done
 -- Configuring done
 -- Generating done
--- Build files have been written to: /cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug
+-- Build files have been written to: /cygdrive/c/Users/Joel/Documents/inf8775/tp1/tp1-H19/cmake-build-debug-cygwin

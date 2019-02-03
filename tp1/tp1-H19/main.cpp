@@ -7,6 +7,7 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
+#include <map>
 
 // quicksort implementation taken from  https://stackoverflow.com/questions/31720408/how-to-make-quick-sort-recursive
 // bubblesort implementation taken from https://www.geeksforgeeks.org/bubble-sort/
@@ -138,26 +139,26 @@ double sortNumbers(vector<int> & vec, const string desired_sorting, const int se
 	int high = vec.size() - 1;
 
 	if (desired_sorting == COUNTING) {
-		start = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		triParDenombrement(vec);
-		finish = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK) {
-		start = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		quickSort(vec, low, high);
-		finish = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK_SEUIL) {
-		start = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		quickSortSeuil(vec, low, high, seuil);
-		finish = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK_RANDOM_SEUIL) {
 		// set the seed for random number generation here, before sorting and time measurement starts
 		srand(time(NULL));
-		start = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		quickSortRdmPivot(vec, low, high, seuil);
-		finish = std::chrono::high_resolution_clock::now();
+		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	}
 
 	
@@ -189,22 +190,26 @@ vector<int> readNumbers(const string filename) {
 	return vector;
 }
 
-void compareAll(vector<int> init_vec) {
+vector<int> compareAll(vector<int> init_vec) {
 	double timeInMs;
 	vector<int> vec;
+	vector<int> times;
 
 	// counting
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, COUNTING);
+	times.push_back(timeInMs);
 	cout << "Elapsed time (counting): " << timeInMs << "ms" << endl;
 	// Quicksort
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, QUICK);
-	cout << "Elapsed time (quick): " << timeInMs << "ms" << endl;
+    times.push_back(timeInMs);
+    cout << "Elapsed time (quick): " << timeInMs << "ms" << endl;
 	//QuicksortSeuil
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, QUICK_SEUIL, DEFAULT_SEUIL);
-	cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
+    times.push_back(timeInMs);
+    cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
 	// Quicksort Random Seuil
 	double mean = 0;
 	for (int i = 0; i < 10; i++) {
@@ -214,7 +219,29 @@ void compareAll(vector<int> init_vec) {
 		mean += timeInMs;
 	}
 	mean /= 10;
-	cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
+    times.push_back(timeInMs);
+    cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
+    return times;
+}
+void createCSVFile(string filename, vector<int> times){
+    std::ofstream comparaisonCSV;
+    std::ofstream seuilsCSV;
+    size_t txtString = filename.find(".txt");
+    vector<char> numOfNumbersString;
+    int setNumber;
+    for(int i = 22; i < txtString; i++){
+        if (filename[i] != '_'){
+            numOfNumbersString.push_back(filename[i]);
+        }
+        setNumber = filename[i + 1];
+    }
+    for (int i =0;i<numOfNumbersString.size();i++){
+        cout << numOfNumbersString[i];
+    }
+    string numbers(numOfNumbersString.begin(),numOfNumbersString.end());
+    comparaisonCSV.open("comparaison.csv");
+    comparaisonCSV << "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
+    comparaisonCSV << filename << "," << numbers << "," << times[0] << "," << times[1] << "," <<times[2] << "," << times[3] << "\n";
 }
 
 int main() {
@@ -222,6 +249,7 @@ int main() {
 	ifstream fichier;
 	unsigned int nombre;
 	const string filename = "./exemplaires/testset_1000_0.txt";
+
 	init_vec = readNumbers(filename);
 
 // for tests:
@@ -232,10 +260,8 @@ int main() {
 	//testSort(vec);
 
 
-	compareAll(init_vec);
-	
-
-
+	vector<int> times = compareAll(init_vec);
+	createCSVFile(filename, times);
 
 	// weird bug in VS where the terminal shuts down immediately, this allows me to see things for more than 0.02 s
 	// (TO REMOVE)
