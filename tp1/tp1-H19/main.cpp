@@ -7,18 +7,18 @@
 #include <vector>
 #include <ctime>
 #include <chrono>
-#include <map>
-
 // quicksort implementation taken from  https://stackoverflow.com/questions/31720408/how-to-make-quick-sort-recursive
 // bubblesort implementation taken from https://www.geeksforgeeks.org/bubble-sort/
 using namespace std;
-
 const unsigned int DEFAULT_SEUIL = 10;
-
 const string COUNTING			= "counting";
 const string QUICK				= "quick";
 const string QUICK_SEUIL		= "quickSeuil";
 const string QUICK_RANDOM_SEUIL = "quickRandomSeuil";
+
+string findSelectedFilename(string basic_string);
+
+vector<int> createNumOfNumbersVector();
 
 void printVector(const vector<int> vector) {
 	for (unsigned int i = 0; i < vector.size(); i++) {
@@ -223,39 +223,111 @@ vector<int> compareAll(vector<int> init_vec) {
     cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
     return times;
 }
-void createCSVFile(string filename, vector<int> times){
-    std::ofstream comparaisonCSV;
-    std::ofstream seuilsCSV;
+
+string createCSVStringData(string fileName, string numbers, vector<int> times, string data){
+    data += fileName;
+    data += ",";
+    data += numbers;
+    data += ",";
+    data += to_string(times[0]);
+    data += ",";
+    data += to_string(times[1]);
+    data += ",";
+    data += to_string(times[2]);
+    data += ",";
+    data +=  to_string(times[3]);
+    data += "\n";
+    return data;
+}
+
+string findNumOfNumbers(string filename){
     size_t txtString = filename.find(".txt");
     vector<char> numOfNumbersString;
     int setNumber;
-    for(int i = 22; i < txtString; i++){
+    for(int i = 22; i < txtString - 1; i++){
         if (filename[i] != '_'){
             numOfNumbersString.push_back(filename[i]);
         }
         setNumber = filename[i + 1];
     }
-    for (int i =0;i<numOfNumbersString.size();i++){
-        cout << numOfNumbersString[i];
-    }
+    string numbers(numOfNumbersString.begin(),numOfNumbersString.end());
+    return numbers;
+}
+
+string findSelectedFilename(string filename) {
     vector<char> fileNameVec;
     for (int i = 14; i < filename.size(); i++ ){
         fileNameVec.push_back(filename[i]);
     }
-    string numbers(numOfNumbersString.begin(),numOfNumbersString.end());
     string fileName(fileNameVec.begin(), fileNameVec.end());
+    return fileName;
+}
+
+void writeToCSV(string data){
+    std::ofstream comparaisonCSV;
     comparaisonCSV.open("comparaison.csv");
-    comparaisonCSV << "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
-    comparaisonCSV << fileName << "," << numbers << "," << times[0] << "," << times[1] << "," <<times[2] << "," << times[3] << "\n";
+    comparaisonCSV << data;
+}
+
+void createCSVFile(string filename, vector<int> times){
+    string numbers = findNumOfNumbers(filename);
+    string selectedFilename = findSelectedFilename(filename);
+    string data = createCSVStringData(selectedFilename, numbers, times, data);
+    //    filename, # of numbers, timeS=0, timeS=5, timeS=10, timeS=20,
+}
+
+vector<int> createNumOfNumbersVector() {
+    vector<int> numOfNumbers;
+    numOfNumbers.push_back(1000);
+    numOfNumbers.push_back(5000);
+    numOfNumbers.push_back(10000);
+    numOfNumbers.push_back(50000);
+    numOfNumbers.push_back(100000);
+    return numOfNumbers;
+}
+
+string createFilename(vector<int> numOfNumbers, int i, int j){
+    string filename = "./exemplaires/testset_";
+    filename.append(to_string(numOfNumbers[i]));
+    filename.append("_");
+    filename.append(to_string(j));
+    filename.append(".txt");
+    return filename;
 }
 
 int main() {
 	vector<int> vec, init_vec;
 	ifstream fichier;
+	vector<int> numOfNumbers = createNumOfNumbersVector();
+	numOfNumbers.push_back(1000);
+    numOfNumbers.push_back(5000);
+    numOfNumbers.push_back(10000);
+    numOfNumbers.push_back(50000);
+    numOfNumbers.push_back(100000);
 	unsigned int nombre;
-	const string filename = "./exemplaires/testset_1000_0.txt";
-
-	init_vec = readNumbers(filename);
+    string data = "";
+    data += "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
+	for(int i = 0; i < 5; i++){
+        for(int j = 0; j < 30; j++){
+            string filename = createFilename(numOfNumbers, i, j);
+            string numbers = findNumOfNumbers(filename);
+            init_vec = readNumbers(filename);
+            vector<int> times = compareAll(init_vec);
+            data += filename;
+            data += ",";
+            data += numbers;
+            data += ",";
+            data += to_string(times[0]);
+            data += ",";
+            data += to_string(times[1]);
+            data += ",";
+            data += to_string(times[2]);
+            data += ",";
+            data +=  to_string(times[3]);
+            data += "\n";
+        }
+	}
+    writeToCSV(data);
 
 // for tests:
 	//initial_vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 21, 22, 25, 4, 3, 11, 1 };
@@ -265,11 +337,9 @@ int main() {
 	//testSort(vec);
 
 
-	vector<int> times = compareAll(init_vec);
-	createCSVFile(filename, times);
-
 	// weird bug in VS where the terminal shuts down immediately, this allows me to see things for more than 0.02 s
 	// (TO REMOVE)
 	cin >> nombre;
 	return 0;
 }
+
