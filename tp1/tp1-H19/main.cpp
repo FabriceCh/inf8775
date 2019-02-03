@@ -238,10 +238,15 @@ void createCSVFile(string filename, vector<int> times){
     for (int i =0;i<numOfNumbersString.size();i++){
         cout << numOfNumbersString[i];
     }
+    vector<char> fileNameVec;
+    for (int i = 14; i < filename.size(); i++ ){
+        fileNameVec.push_back(filename[i]);
+    }
     string numbers(numOfNumbersString.begin(),numOfNumbersString.end());
+    string fileName(fileNameVec.begin(), fileNameVec.end());
     comparaisonCSV.open("comparaison.csv");
     comparaisonCSV << "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
-    comparaisonCSV << filename << "," << numbers << "," << times[0] << "," << times[1] << "," <<times[2] << "," << times[3] << "\n";
+    comparaisonCSV << fileName << "," << numbers << "," << times[0] << "," << times[1] << "," <<times[2] << "," << times[3] << "\n";
 }
 
 int main() {
