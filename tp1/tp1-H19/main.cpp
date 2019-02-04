@@ -139,26 +139,26 @@ double sortNumbers(vector<int> & vec, const string desired_sorting, const int se
 	int high = vec.size() - 1;
 
 	if (desired_sorting == COUNTING) {
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		triParDenombrement(vec);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK) {
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		quickSort(vec, low, high);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK_SEUIL) {
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		quickSortSeuil(vec, low, high, seuil);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK_RANDOM_SEUIL) {
 		// set the seed for random number generation here, before sorting and time measurement starts
 		srand(time(NULL));
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		quickSortRdmPivot(vec, low, high, seuil);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	}
 
 	
