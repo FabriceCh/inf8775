@@ -132,8 +132,8 @@ void triParDenombrement(vector<int> & vec) {
 // returns elapsed time for the selected sorting
 double sortNumbers(vector<int> & vec, const string desired_sorting, const int seuil) {
 
-	chrono::steady_clock::time_point start;
-	chrono::steady_clock::time_point finish;
+	chrono::high_resolution_clock::time_point start;
+	chrono::high_resolution_clock::time_point finish;
 
 	int low = 0;
 	int high = vec.size() - 1;
@@ -163,7 +163,9 @@ double sortNumbers(vector<int> & vec, const string desired_sorting, const int se
 
 	
 	std::chrono::duration<double> elapsed = finish - start;
-	return elapsed.count() * 1000;
+	double time = elapsed.count() * 1000;
+	cout << time;
+	return time; 
 }
 
 double sortNumbers(vector<int> vec, string desired_sorting) {
@@ -190,14 +192,15 @@ vector<int> readNumbers(const string filename) {
 	return vector;
 }
 
-vector<int> compareAll(vector<int> init_vec) {
+vector<double> compareAll(vector<int> init_vec) {
 	double timeInMs;
 	vector<int> vec;
-	vector<int> times;
+	vector<double> times;
 
 	// counting
 	vec = init_vec;
-	timeInMs = sortNumbers(vec, COUNTING);
+	//timeInMs = sortNumbers(vec, COUNTING);
+	timeInMs = 10;
 	times.push_back(timeInMs);
 	cout << "Elapsed time (counting): " << timeInMs << "ms" << endl;
 	// Quicksort
@@ -209,18 +212,18 @@ vector<int> compareAll(vector<int> init_vec) {
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, QUICK_SEUIL, DEFAULT_SEUIL);
     times.push_back(timeInMs);
-    cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
+    //cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
 	// Quicksort Random Seuil
 	double mean = 0;
 	for (int i = 0; i < 10; i++) {
 		vec = init_vec;
 		timeInMs = sortNumbers(vec, QUICK_RANDOM_SEUIL, DEFAULT_SEUIL);
-		cout << "Elapsed time (quickRdmSeuil): " << timeInMs << "ms" << endl;
+		//cout << "Elapsed time (quickRdmSeuil): " << timeInMs << "ms" << endl;
 		mean += timeInMs;
 	}
 	mean /= 10;
-    times.push_back(timeInMs);
-    cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
+    times.push_back(mean);
+    //cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
     return times;
 }
 
@@ -263,10 +266,26 @@ string findSelectedFilename(string filename) {
     return fileName;
 }
 
-void writeToCSV(string data){
+void writeToComparisonCSV(){
     std::ofstream comparaisonCSV;
     comparaisonCSV.open("comparaison.csv");
-    comparaisonCSV << data;
+    comparaisonCSV << "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
+}
+
+void appendToComparisonCSV(string filename,
+							 int taille,
+							 double timeConuting,
+							 double timeQuick,
+							 double timeQuickSeuil,
+							 double timeQuickRdmSeuil) {
+	std::ofstream comparaisonCSV;
+	comparaisonCSV.open("comparaison.csv", ios_base::app);
+	comparaisonCSV << filename << "," 
+	<< taille  << "," 
+	<< timeConuting << "," 
+	<< timeQuick << "," 
+	<< timeQuickSeuil << "," 
+	<< timeQuickRdmSeuil << "\n";
 }
 
 void createCSVFile(string filename, vector<int> times){
@@ -299,35 +318,23 @@ int main() {
 	vector<int> vec, init_vec;
 	ifstream fichier;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
-	numOfNumbers.push_back(1000);
-    numOfNumbers.push_back(5000);
-    numOfNumbers.push_back(10000);
-    numOfNumbers.push_back(50000);
-    numOfNumbers.push_back(100000);
 	unsigned int nombre;
     string data = "";
-    data += "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
-	for(int i = 0; i < 5; i++){
+	vector<double> times;
+	string filename;
+	string numbers;
+	writeToComparisonCSV();	
+	for(int i = 0; i < 3; i++){
         for(int j = 0; j < 30; j++){
-            string filename = createFilename(numOfNumbers, i, j);
-            string numbers = findNumOfNumbers(filename);
-            init_vec = readNumbers(filename);
-            vector<int> times = compareAll(init_vec);
-            data += filename;
-            data += ",";
-            data += numbers;
-            data += ",";
-            data += to_string(times[0]);
-            data += ",";
-            data += to_string(times[1]);
-            data += ",";
-            data += to_string(times[2]);
-            data += ",";
-            data +=  to_string(times[3]);
-            data += "\n";
+            filename = createFilename(numOfNumbers, i, j);
+			vec = readNumbers(filename);
+            cout << filename << endl;
+			times = compareAll(vec);
+			cout << endl;
+			appendToComparisonCSV(filename, vec.size(), times[0], times [1], times [2], times[3]);
         }
 	}
-    writeToCSV(data);
+    
 
 // for tests:
 	//initial_vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 21, 22, 25, 4, 3, 11, 1 };
