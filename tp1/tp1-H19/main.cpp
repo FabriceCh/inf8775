@@ -139,26 +139,26 @@ double sortNumbers(vector<int> & vec, const string desired_sorting, const int se
 	int high = vec.size() - 1;
 
 	if (desired_sorting == COUNTING) {
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		triParDenombrement(vec);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK) {
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		quickSort(vec, low, high);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK_SEUIL) {
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		quickSortSeuil(vec, low, high, seuil);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	} 
 	else if (desired_sorting == QUICK_RANDOM_SEUIL) {
 		// set the seed for random number generation here, before sorting and time measurement starts
 		srand(time(NULL));
-		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		start = std::chrono::high_resolution_clock::now();
 		quickSortRdmPivot(vec, low, high, seuil);
-		std::chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+		finish = std::chrono::high_resolution_clock::now();
 	}
 
 	
@@ -226,6 +226,66 @@ vector<double> compareAll(vector<int> init_vec) {
     //cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
     return times;
 }
+
+struct SeuilTime {
+	int seuil;
+	double timeQuick;
+	double timeQuickRdm;
+};
+
+void appendToSeuilCSV(string filename,
+							 int taille,
+							 SeuilTime seuilTime) {
+	std::ofstream comparaisonCSV;
+	comparaisonCSV.open("seuils.csv", ios_base::app);
+	comparaisonCSV << filename << "," 
+	<< taille  << "," 
+	<< seuilTime.seuil << "," 
+	<< seuilTime.timeQuick << "," 
+	<< seuilTime.timeQuickRdm << "\n";
+}
+
+void writeToSeuilCSV(){
+    std::ofstream comparaisonCSV;
+    comparaisonCSV.open("seuils.csv");
+    comparaisonCSV << "filename, numbers, seuil, timeQuickSeuil, timeQuickRdmSeuil\n";
+}
+
+
+
+vector<SeuilTime> compareSeuils(vector<int> init_vec) {
+	double timeInMs;
+	vector<int> vec;
+	vector<SeuilTime> times;
+
+	vector<int> seuils = {0, 2, 3, 4, 5, 8, 10, 15, 20, 30, 50, 75, 100, 150, 200};
+	for (unsigned int i = 0; i < seuils.size(); i++) {
+		SeuilTime exp;
+		exp.seuil = seuils[i];
+		//QuicksortSeuil
+		vec = init_vec;
+		timeInMs = sortNumbers(vec, QUICK_SEUIL, seuils[i]);
+		exp.timeQuick = timeInMs;
+		//cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
+		// Quicksort Random Seuil
+		double mean = 0;
+		for (int i = 0; i < 10; i++) {
+			vec = init_vec;
+			timeInMs = sortNumbers(vec, QUICK_RANDOM_SEUIL, seuils[i]);
+			//cout << "Elapsed time (quickRdmSeuil): " << timeInMs << "ms" << endl;
+			mean += timeInMs;
+		}
+		mean /= 10;
+		exp.timeQuickRdm = mean;
+		times.push_back(exp);
+		//cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
+		
+	}
+	return times;
+	
+}
+
+
 
 string createCSVStringData(string fileName, string numbers, vector<int> times, string data){
     data += fileName;
@@ -314,11 +374,34 @@ string createFilename(vector<int> numOfNumbers, int i, int j){
     return filename;
 }
 
-int main() {
-	vector<int> vec, init_vec;
-	ifstream fichier;
+void seuilExperimental() {
+	vector<SeuilTime> seuilTimes;
+
+	vector<int> vec;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
-	unsigned int nombre;
+    string data = "";
+	string filename;
+	string numbers;
+	writeToSeuilCSV();	
+	for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 30; j++){
+            filename = createFilename(numOfNumbers, i, j);
+			vec = readNumbers(filename);
+            cout << filename << endl;
+			seuilTimes = compareSeuils(vec);
+			cout << endl;
+			for(unsigned int k = 0; k < seuilTimes.size(); k++) {
+				appendToSeuilCSV(filename, vec.size(), seuilTimes[k]);
+			}
+        }
+	}
+
+}
+
+void gatherResults() {
+	vector<int> vec;
+	vector<int> numOfNumbers = createNumOfNumbersVector();
+	
     string data = "";
 	vector<double> times;
 	string filename;
@@ -334,7 +417,11 @@ int main() {
 			appendToComparisonCSV(filename, vec.size(), times[0], times [1], times [2], times[3]);
         }
 	}
-    
+}
+
+int main() {
+	seuilExperimental();
+    unsigned int nombre;
 
 // for tests:
 	//initial_vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 21, 22, 25, 4, 3, 11, 1 };
