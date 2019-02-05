@@ -258,7 +258,7 @@ vector<SeuilTime> compareSeuils(vector<int> init_vec) {
 	vector<int> vec;
 	vector<SeuilTime> times;
 
-	vector<int> seuils = {0, 2, 3, 4, 5, 8, 10, 15, 20, 30, 50, 75, 100, 150, 200};
+	vector<int> seuils = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128, 256};
 	for (unsigned int i = 0; i < seuils.size(); i++) {
 		SeuilTime exp;
 		exp.seuil = seuils[i];
@@ -362,6 +362,7 @@ vector<int> createNumOfNumbersVector() {
     numOfNumbers.push_back(10000);
     numOfNumbers.push_back(50000);
     numOfNumbers.push_back(100000);
+	numOfNumbers.push_back(500000);
     return numOfNumbers;
 }
 
@@ -383,7 +384,7 @@ void seuilExperimental() {
 	string filename;
 	string numbers;
 	writeToSeuilCSV();	
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 6; i++){
         for(int j = 0; j < 30; j++){
             filename = createFilename(numOfNumbers, i, j);
 			vec = readNumbers(filename);
@@ -407,7 +408,7 @@ void gatherResults() {
 	string filename;
 	string numbers;
 	writeToComparisonCSV();	
-	for(int i = 0; i < 3; i++){
+	for(int i = 0; i < 6; i++){
         for(int j = 0; j < 30; j++){
             filename = createFilename(numOfNumbers, i, j);
 			vec = readNumbers(filename);
@@ -421,19 +422,14 @@ void gatherResults() {
 
 int main() {
 	seuilExperimental();
+	//gatherResults();
+	vector<int> vec;
+	string filename = "./exemplaires/testset_1000_2.txt";
+
+
+
+
     unsigned int nombre;
-
-// for tests:
-	//initial_vector = { 3, 2, 5, 1, 8, 4, 9, 1, 6, 21, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 21, 22, 25, 4, 3, 11, 1 };
-	//initial_vector = { 11, 11, 11, 11, 8, 4, 1, 6, 7, 2, 1, 9, 11, 11, 11, 11, 11, 11, 11, 11 };
-	//partialBubbleSort(vec, 10, 100);
-	//printVector(vec);
-	//testSort(vec);
-
-
-	// weird bug in VS where the terminal shuts down immediately, this allows me to see things for more than 0.02 s
-	// (TO REMOVE)
-	cin >> nombre;
 	return 0;
 }
 
