@@ -10,9 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a4748e3b-2b2f-46a3-98e1-f362984de8c7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/sort.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/testset_1000_0.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/sort.py" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/sort.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/CMakeFiles/tp1_H19.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/CMakeFiles/tp1_H19.dir/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/tp1_H19.exe" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/tp1_H19.exe" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,25 +23,43 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/inf8775$sort.coverage" NAME="sort Coverage Results" MODIFIED="1548689248809" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tp1/tp1-H19" />
+    <SUITE FILE_PATH="coverage/inf8775$sort.coverage" NAME="sort Coverage Results" MODIFIED="1549324522084" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tp1/tp1-H19" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/sort.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="187">
-              <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="0" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/main.cpp">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-10">
+              <caret line="414" column="36" selection-start-line="414" selection-start-column="36" selection-end-line="414" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaison.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-9">
+              <caret line="91" selection-start-line="91" selection-end-line="91" />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>10</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,12 +69,14 @@
       <list>
         <option value="$PROJECT_DIR$/tp1/tp1-H19/sort.py" />
         <option value="$PROJECT_DIR$/tp1/tp1-H19/triRapide.cpp" />
+        <option value="$PROJECT_DIR$/tp1/tp1-H19/main.cpp" />
+        <option value="$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1358" />
-    <option name="y" value="-8" />
+    <option name="x" value="1441" />
+    <option name="y" value="83" />
     <option name="width" value="1382" />
     <option name="height" value="744" />
   </component>
@@ -92,7 +114,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="preferences.lookFeel" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.Color Scheme Font" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -164,22 +186,27 @@
       <updated>1548626180808</updated>
       <workItem from="1548626189498" duration="1895000" />
       <workItem from="1548688936358" duration="1339000" />
+      <workItem from="1549318661612" duration="244000" />
+      <workItem from="1549319167837" duration="193000" />
+      <workItem from="1549319394146" duration="890000" />
+      <workItem from="1549320360597" duration="7430000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3234000" />
+    <option name="totallyTimeSpent" value="11991000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1358" y="-8" width="1376" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Designer" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25531915" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1724924" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info id="Designer" order="3" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.17094018" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49924013" weight="0.39934534" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -187,16 +214,16 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50227964" side_tool="true" visible="true" weight="0.3289689" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49772036" visible="true" weight="0.3289689" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.505295" side_tool="true" weight="0.2871795" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.494705" visible="true" weight="0.3931624" />
       <window_info anchor="bottom" id="Python Console" order="12" />
-      <window_info anchor="right" id="Maven" />
-      <window_info anchor="right" id="Palette&#9;" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="SciView" order="3" />
       <window_info anchor="right" id="Database" order="4" />
+      <window_info anchor="right" id="Maven" order="5" />
+      <window_info anchor="right" id="Palette&#9;" order="6" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -205,13 +232,34 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/sort.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
+        <state relative-caret-position="192">
           <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/main.cpp">
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/gdb.exe.stackdump">
       <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-10">
+          <caret line="414" column="36" selection-start-line="414" selection-start-column="36" selection-end-line="414" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaison.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="91" selection-start-line="91" selection-end-line="91" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="0" />
+        </state>
+      </provider>
     </entry>
   </component>
 </project>
