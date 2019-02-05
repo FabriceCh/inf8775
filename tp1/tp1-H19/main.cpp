@@ -248,7 +248,7 @@ void appendToSeuilCSV(string filename,
 void writeToSeuilCSV(){
     std::ofstream comparaisonCSV;
     comparaisonCSV.open("seuils.csv");
-    comparaisonCSV << "filename, numbers, seuil, timeQuickSeuil, timeQuickRdmSeuil\n";
+    comparaisonCSV << "filename,numbers,seuil,timeQuickSeuil,timeQuickRdmSeuil\n";
 }
 
 
@@ -329,7 +329,7 @@ string findSelectedFilename(string filename) {
 void writeToComparisonCSV(){
     std::ofstream comparaisonCSV;
     comparaisonCSV.open("comparaison.csv");
-    comparaisonCSV << "filename, numbers, timeCounting, timeQuick, timeQuickSeuil, timeQuickRdmSeuil\n";
+    comparaisonCSV << "filename,numbers,timeCounting,timeQuick,timeQuickSeuil,timeQuickRdmSeuil\n";
 }
 
 void appendToComparisonCSV(string filename,
