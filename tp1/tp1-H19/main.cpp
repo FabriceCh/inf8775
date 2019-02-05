@@ -131,13 +131,10 @@ void triParDenombrement(vector<int> & vec) {
 
 // returns elapsed time for the selected sorting
 double sortNumbers(vector<int> & vec, const string desired_sorting, const int seuil) {
-
 	chrono::high_resolution_clock::time_point start;
 	chrono::high_resolution_clock::time_point finish;
-
 	int low = 0;
 	int high = vec.size() - 1;
-
 	if (desired_sorting == COUNTING) {
 		start = std::chrono::high_resolution_clock::now();
 		triParDenombrement(vec);
@@ -196,7 +193,6 @@ vector<double> compareAll(vector<int> init_vec) {
 	double timeInMs;
 	vector<int> vec;
 	vector<double> times;
-
 	// counting
 	vec = init_vec;
 	//timeInMs = sortNumbers(vec, COUNTING);
@@ -257,7 +253,6 @@ vector<SeuilTime> compareSeuils(vector<int> init_vec) {
 	double timeInMs;
 	vector<int> vec;
 	vector<SeuilTime> times;
-
 	vector<int> seuils = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128, 256};
 	for (unsigned int i = 0; i < seuils.size(); i++) {
 		SeuilTime exp;
@@ -377,7 +372,6 @@ string createFilename(vector<int> numOfNumbers, int i, int j){
 
 void seuilExperimental() {
 	vector<SeuilTime> seuilTimes;
-
 	vector<int> vec;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
     string data = "";
@@ -396,13 +390,11 @@ void seuilExperimental() {
 			}
         }
 	}
-
 }
 
 void gatherResults() {
 	vector<int> vec;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
-	
     string data = "";
 	vector<double> times;
 	string filename;
@@ -425,10 +417,6 @@ int main() {
 	//gatherResults();
 	vector<int> vec;
 	string filename = "./exemplaires/testset_1000_2.txt";
-
-
-
-
     unsigned int nombre;
 	return 0;
 }
