@@ -1,5 +1,5 @@
 import pandas as pd
-data = pd.read_csv('./comparaison.csv')
+data = pd.read_csv('./results/comparaison.csv')
 
 meanTimeCounting = 0
 meanTimeQuick = 0
@@ -23,18 +23,23 @@ meanTimeQuickRdmSeuilSerieB = 0
 meanTimeQuickRdmSeuilSerieC = 0
 
 group = []
+groupInt = 0
 timeQuickData = []
 timeCountingData = []
 timeQuickSeuilData = []
 timeQuickRdmSeuilData = []
 
-for k in range(2):
-    for i in range(3):
-        for j in range(9):
-            timeCounting = data.iat[j, 2]
-            timeQuick = data.iat[j, 3]
-            timeQuickSeuil = data.iat[j, 4]
-            timeQuickRdmSeuil = data.iat[j, 5]
+NUMERO_SERIE = 9
+NOMBRE_GROUPE_PAR_GROS_CHIFFRE = 3
+NOMBRE_DE_GROS_CHIFFRES = 3
+
+for k in range(NOMBRE_DE_GROS_CHIFFRES):
+    for i in range(NOMBRE_GROUPE_PAR_GROS_CHIFFRE):
+        for j in range(NUMERO_SERIE):
+            timeCounting = data.iat[j + 1, 2]
+            timeQuick = data.iat[j + 1, 3]
+            timeQuickSeuil = data.iat[j + 1, 4]
+            timeQuickRdmSeuil = data.iat[j + 1, 5]
             meanTimeCounting += timeCounting
             meanTimeQuick += timeQuick
             meanTimeQuickSeuil += timeQuickSeuil
@@ -84,6 +89,7 @@ d = {'group': group,
     'timeQuickSeuil': timeQuickSeuilData, 
     'timeQuickRdmSeuil': timeQuickRdmSeuilData
     }
+
 df = pd.DataFrame(data=d)
 df.to_csv("output.csv", index=False, header=False)
 print(df)
