@@ -133,14 +133,16 @@ void triParDenombrement(vector<hugeInt> & vec) {
 }
 
 // returns elapsed time for the selected sorting
+<<<<<<< HEAD
 double sortNumbers(vector<hugeInt> & vec, const string desired_sorting, const int seuil) {
 
+=======
+double sortNumbers(vector<int> & vec, const string desired_sorting, const int seuil) {
+>>>>>>> ea9e26e237499755510960dc517a05c54f0ff149
 	chrono::high_resolution_clock::time_point start;
 	chrono::high_resolution_clock::time_point finish;
-
 	int low = 0;
 	int high = vec.size() - 1;
-
 	if (desired_sorting == COUNTING) {
 		start = std::chrono::high_resolution_clock::now();
 		triParDenombrement(vec);
@@ -198,7 +200,6 @@ vector<double> compareAll(vector<hugeInt> init_vec) {
 	double timeInMs;
 	vector<hugeInt> vec;
 	vector<double> times;
-
 	// counting
 	vec = init_vec;
 	//timeInMs = sortNumbers(vec, COUNTING);
@@ -259,7 +260,6 @@ vector<SeuilTime> compareSeuils(vector<hugeInt> init_vec) {
 	double timeInMs;
 	vector<hugeInt> vec;
 	vector<SeuilTime> times;
-
 	vector<int> seuils = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128, 256};
 	for (unsigned int i = 0; i < seuils.size(); i++) {
 		SeuilTime exp;
@@ -379,8 +379,12 @@ string createFilename(vector<int> numOfNumbers, int i, int j){
 
 void seuilExperiment() {
 	vector<SeuilTime> seuilTimes;
+<<<<<<< HEAD
 
 	vector<hugeInt> vec;
+=======
+	vector<int> vec;
+>>>>>>> ea9e26e237499755510960dc517a05c54f0ff149
 	vector<int> numOfNumbers = createNumOfNumbersVector();
     string data = "";
 	string filename;
@@ -398,13 +402,11 @@ void seuilExperiment() {
 			}
         }
 	}
-
 }
 
 void gatherResults() {
 	vector<hugeInt> vec;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
-	
     string data = "";
 	vector<double> times;
 	string filename;
