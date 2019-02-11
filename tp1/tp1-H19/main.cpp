@@ -10,6 +10,9 @@
 // quicksort implementation taken from  https://stackoverflow.com/questions/31720408/how-to-make-quick-sort-recursive
 // bubblesort implementation taken from https://www.geeksforgeeks.org/bubble-sort/
 using namespace std;
+
+typedef unsigned long long int hugeInt;
+
 const unsigned int DEFAULT_SEUIL = 10;
 const string COUNTING			= "counting";
 const string QUICK				= "quick";
@@ -20,14 +23,14 @@ string findSelectedFilename(string basic_string);
 
 vector<int> createNumOfNumbersVector();
 
-void printVector(const vector<int> vector) {
+void printVector(const vector<hugeInt> vector) {
 	for (unsigned int i = 0; i < vector.size(); i++) {
 		cout << vector[i] << " ";
 	}
 	cout << endl;
 }
 
-void testSort(const vector<int> vec) {
+void testSort(const vector<hugeInt> vec) {
 	for (unsigned int i = 1; i < vec.size() - 1; i++) {
 		if (vec[i - 1] > vec[i]) {
 			cout << "ERROR: The vector is not sorted correctly at index " << i << endl;
@@ -40,7 +43,7 @@ int randomNumberBetween(int min, int max) {
 	return randomNumber;
 }
 
-void partialBubbleSort(vector<int> & vec, int start, int end) {
+void partialBubbleSort(vector<hugeInt> & vec, int start, int end) {
 	for (int i = start; i < end; i++) {
 		// Last i elements are already in place    
 		// here because we don't start at the begining of the array we have to add the starting index in order to make the loop go all the way through
@@ -54,8 +57,8 @@ void partialBubbleSort(vector<int> & vec, int start, int end) {
 	}
 }
 
-int partition(vector<int> & vec, int low, int high) {
-	int pivot = vec[high];//taking the last element as pivot
+int partition(vector<hugeInt> & vec, int low, int high) {
+	hugeInt pivot = vec[high];//taking the last element as pivot
 	int i = (low - 1);
 	for (int j = low; j <= high - 1; j++) {
 		// If current element is smaller than or
@@ -71,14 +74,14 @@ int partition(vector<int> & vec, int low, int high) {
 	return (i + 1);
 }
 
-int partitionRdmPivot(vector<int> & vec, int low, int high) {
+int partitionRdmPivot(vector<hugeInt> & vec, int low, int high) {
 	int pivotIndex = randomNumberBetween(low, high);
 	// in order to use the random pivot, we simply swap it with the last element of partition before using the regular partition function taking last element as pivot
 	iter_swap(vec.begin() + pivotIndex, vec.begin() + high);
 	return partition(vec, low, high);
 }
 
-void quickSort(vector<int> & vec, int low, int high) {
+void quickSort(vector<hugeInt> & vec, int low, int high) {
 	if (low < high) {
 		int pi = partition(vec, low, high);
 		quickSort(vec, low, pi - 1);
@@ -86,7 +89,7 @@ void quickSort(vector<int> & vec, int low, int high) {
 	}
 }
 
-void quickSortSeuil(vector<int> & vec, int low, int high, const int seuil) {
+void quickSortSeuil(vector<hugeInt> & vec, int low, int high, const int seuil) {
 	if (high - low > seuil) {
 		int pi = partition(vec, low, high);
 		quickSortSeuil(vec, low, pi - 1, seuil);
@@ -97,7 +100,7 @@ void quickSortSeuil(vector<int> & vec, int low, int high, const int seuil) {
 	}
 }
 
-void quickSortRdmPivot(vector<int> & vec, int low, int high, const int seuil) {
+void quickSortRdmPivot(vector<hugeInt> & vec, int low, int high, const int seuil) {
 	if (high - low > seuil) {
 		int pi = partitionRdmPivot(vec, low, high);
 		quickSortRdmPivot(vec, low, pi - 1, seuil);
@@ -108,10 +111,10 @@ void quickSortRdmPivot(vector<int> & vec, int low, int high, const int seuil) {
 	}
 }
 
-void triParDenombrement(vector<int> & vec) {
+void triParDenombrement(vector<hugeInt> & vec) {
 	const int max_value = *max_element(vec.begin(), vec.end());
 	vector<int> valueCounters;
-	vector<int> sortedVector;
+	vector<hugeInt> sortedVector;
 	// initialize a vector the size of the largest element 
 	for (int i = 0; i < max_value; i++) {
 		valueCounters.push_back(0);
@@ -130,7 +133,7 @@ void triParDenombrement(vector<int> & vec) {
 }
 
 // returns elapsed time for the selected sorting
-double sortNumbers(vector<int> & vec, const string desired_sorting, const int seuil) {
+double sortNumbers(vector<hugeInt> & vec, const string desired_sorting, const int seuil) {
 
 	chrono::high_resolution_clock::time_point start;
 	chrono::high_resolution_clock::time_point finish;
@@ -164,21 +167,20 @@ double sortNumbers(vector<int> & vec, const string desired_sorting, const int se
 	
 	std::chrono::duration<double> elapsed = finish - start;
 	double time = elapsed.count() * 1000;
-	cout << time;
 	return time; 
 }
 
-double sortNumbers(vector<int> vec, string desired_sorting) {
+double sortNumbers(vector<hugeInt> vec, string desired_sorting) {
 	if (desired_sorting == "quickSeuil" || desired_sorting == "quickRandomSeuil") {
-		cout << endl << "Please use the other SortNumbers function call and specify the \"seuil\"";
+		//cout << endl << "Please use the other SortNumbers function call and specify the \"seuil\"";
 	}
 	return sortNumbers(vec, desired_sorting, DEFAULT_SEUIL);
 }
 
-vector<int> readNumbers(const string filename) {
-	vector<int> vector;
+vector<hugeInt> readNumbers(const string filename) {
+	vector<hugeInt> vector;
 	ifstream fichier;
-	unsigned int nombre;
+	hugeInt nombre;
 	fichier.open(filename);
 	if (!fichier) {
 		cerr << "Error opening file";
@@ -192,9 +194,9 @@ vector<int> readNumbers(const string filename) {
 	return vector;
 }
 
-vector<double> compareAll(vector<int> init_vec) {
+vector<double> compareAll(vector<hugeInt> init_vec) {
 	double timeInMs;
-	vector<int> vec;
+	vector<hugeInt> vec;
 	vector<double> times;
 
 	// counting
@@ -253,9 +255,9 @@ void writeToSeuilCSV(){
 
 
 
-vector<SeuilTime> compareSeuils(vector<int> init_vec) {
+vector<SeuilTime> compareSeuils(vector<hugeInt> init_vec) {
 	double timeInMs;
-	vector<int> vec;
+	vector<hugeInt> vec;
 	vector<SeuilTime> times;
 
 	vector<int> seuils = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128, 256};
@@ -375,10 +377,10 @@ string createFilename(vector<int> numOfNumbers, int i, int j){
     return filename;
 }
 
-void seuilExperimental() {
+void seuilExperiment() {
 	vector<SeuilTime> seuilTimes;
 
-	vector<int> vec;
+	vector<hugeInt> vec;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
     string data = "";
 	string filename;
@@ -400,7 +402,7 @@ void seuilExperimental() {
 }
 
 void gatherResults() {
-	vector<int> vec;
+	vector<hugeInt> vec;
 	vector<int> numOfNumbers = createNumOfNumbersVector();
 	
     string data = "";
@@ -420,16 +422,40 @@ void gatherResults() {
 	}
 }
 
-int main() {
-	seuilExperimental();
+void useInterface(const char * argv[]) {
+	// argv[1]: filename argv[2]: algoName argv[3-4]: show sorted / show time
+	string fileName, sortAlgo, addArg1, addArg2;
+	bool showSortedArray = false, showTime = false;
+	if(argv[1] != nullptr) fileName = argv[1];
+	if(argv[2] != nullptr) sortAlgo = argv[2];
+	if(argv[3] != nullptr) addArg1 = argv[3];
+	if(argv[4] != nullptr) addArg2 = argv[4];
+	if(addArg1 == "-p" || addArg2 == "-p") {
+		showSortedArray = true;
+	}
+	if(addArg1 == "-e" || addArg2 == "-e") {
+		showTime = true;
+	}
+
+	vector<hugeInt> numbers = readNumbers(fileName);
+	double elapsedTime = sortNumbers(numbers, sortAlgo);
+
+	if(showSortedArray) {
+		printVector(numbers);
+	} 
+	if(showTime) {
+		cout << endl << elapsedTime << endl;
+	}
+}
+
+int main(int argc, const char * argv[]) {
+	// uncomment to run all quicksorts with seuils and write to seuil.csv
+	//seuilExperiment();
+	// uncomment to run all sorts for comparison (using DEFAULT_SEUIL)
 	//gatherResults();
-	vector<int> vec;
-	string filename = "./exemplaires/testset_1000_2.txt";
+	//uncomment to use interface for TP
+	useInterface(argv);
 
-
-
-
-    unsigned int nombre;
 	return 0;
 }
 
