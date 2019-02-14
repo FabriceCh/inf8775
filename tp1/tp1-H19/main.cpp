@@ -375,12 +375,8 @@ string createFilename(vector<int> numOfNumbers, int i, int j){
 
 void seuilExperiment() {
 	vector<SeuilTime> seuilTimes;
-<<<<<<< HEAD
 
 	vector<hugeInt> vec;
-=======
-	vector<int> vec;
->>>>>>> ea9e26e237499755510960dc517a05c54f0ff149
 	vector<int> numOfNumbers = createNumOfNumbersVector();
     string data = "";
 	string filename;
