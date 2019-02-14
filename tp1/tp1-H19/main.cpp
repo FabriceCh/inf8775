@@ -133,12 +133,8 @@ void triParDenombrement(vector<hugeInt> & vec) {
 }
 
 // returns elapsed time for the selected sorting
-<<<<<<< HEAD
 double sortNumbers(vector<hugeInt> & vec, const string desired_sorting, const int seuil) {
 
-=======
-double sortNumbers(vector<int> & vec, const string desired_sorting, const int seuil) {
->>>>>>> ea9e26e237499755510960dc517a05c54f0ff149
 	chrono::high_resolution_clock::time_point start;
 	chrono::high_resolution_clock::time_point finish;
 	int low = 0;
