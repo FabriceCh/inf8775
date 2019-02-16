@@ -169,7 +169,7 @@ double sortNumbers(vector<hugeInt> & vec, const string desired_sorting, const in
 	return time; 
 }
 
-double sortNumbers(vector<hugeInt> vec, string desired_sorting) {
+double sortNumbers(vector<hugeInt> & vec, string desired_sorting) {
 	if (desired_sorting == "quickSeuil" || desired_sorting == "quickRandomSeuil") {
 		//cout << endl << "Please use the other SortNumbers function call and specify the \"seuil\"";
 	}
@@ -438,7 +438,7 @@ void useInterface(const char * argv[]) {
 	if(addArg1 == "-p" || addArg2 == "-p") {
 		showSortedArray = true;
 	}
-	if(addArg1 == "-e" || addArg2 == "-e") {
+	if(addArg1 == "-t" || addArg2 == "-t") {
 		showTime = true;
 	}
 
@@ -457,9 +457,9 @@ int main(int argc, const char * argv[]) {
 	// uncomment to run all quicksorts with seuils and write to seuil.csv
 	//seuilExperiment();
 	// uncomment to run all sorts for comparison (using DEFAULT_SEUIL)
-	gatherResults();
+	//gatherResults();
 	//uncomment to use interface for TP
-	//useInterface(argv);
+	useInterface(argv);
 
 	return 0;
 }
