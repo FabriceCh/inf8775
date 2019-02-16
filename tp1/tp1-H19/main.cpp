@@ -337,7 +337,7 @@ string findSelectedFilename(string filename) {
 
 void writeToComparisonCSV(){
     std::ofstream comparaisonCSV;
-    comparaisonCSV.open("comparaison.csv");
+    comparaisonCSV.open("./results/comparaison.csv");
     comparaisonCSV << "filename,numbers,timeCounting,timeQuick,timeQuickSeuil,timeQuickRdmSeuil\n";
 }
 
@@ -348,7 +348,7 @@ void appendToComparisonCSV(string filename,
 							 double timeQuickSeuil,
 							 double timeQuickRdmSeuil) {
 	std::ofstream comparaisonCSV;
-	comparaisonCSV.open("comparaison.csv", ios_base::app);
+	comparaisonCSV.open("./results/comparaison.csv", ios_base::app);
 	comparaisonCSV << filename << "," 
 	<< taille  << "," 
 	<< timeConuting << "," 
