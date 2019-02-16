@@ -10,11 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a4748e3b-2b2f-46a3-98e1-f362984de8c7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/CMakeFiles/tp1_H19.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/CMakeFiles/tp1_H19.dir/main.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/tp1_H19.exe" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/cmake-build-debug-cygwin/tp1_H19.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tp1/tp1-H19/comparaisons.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/tp1/tp1-H19/comparaisons.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -27,29 +23,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb">
-          <provider selected="true" editor-type-id="ipnb-editor">
-            <state>
-              <selected id="0" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-10">
-              <caret line="414" column="36" selection-start-line="414" selection-start-column="36" selection-end-line="414" selection-end-column="36" />
+            <state relative-caret-position="393">
+              <caret line="427" column="31" lean-forward="true" selection-start-line="427" selection-start-column="31" selection-end-line="427" selection-end-column="31" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaison.csv">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-9">
-              <caret line="91" selection-start-line="91" selection-end-line="91" />
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaisons.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="0" />
             </state>
           </provider>
         </entry>
@@ -85,6 +72,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -107,7 +95,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
     </panes>
   </component>
@@ -190,17 +177,17 @@
       <workItem from="1549319167837" duration="193000" />
       <workItem from="1549319394146" duration="890000" />
       <workItem from="1549320360597" duration="7430000" />
+      <workItem from="1550331504031" duration="342000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="11991000" />
+    <option name="totallyTimeSpent" value="12333000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1358" y="-8" width="1376" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1724924" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17477204" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info id="Designer" order="3" />
@@ -215,7 +202,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.505295" side_tool="true" weight="0.2871795" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" sideWeight="0.494705" visible="true" weight="0.3931624" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.494705" weight="0.3931624" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -230,31 +217,20 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/sort.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="11" column="27" selection-start-line="11" selection-start-column="27" selection-end-line="11" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/sort.py" />
     <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/gdb.exe.stackdump">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaison.csv" />
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb" />
     <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-10">
-          <caret line="414" column="36" selection-start-line="414" selection-start-column="36" selection-end-line="414" selection-end-column="36" />
+        <state relative-caret-position="393">
+          <caret line="427" column="31" lean-forward="true" selection-start-line="427" selection-start-column="31" selection-end-line="427" selection-end-column="31" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaison.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9">
-          <caret line="91" selection-start-line="91" selection-end-line="91" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/Untitled.ipynb">
+    <entry file="file://$PROJECT_DIR$/tp1/tp1-H19/comparaisons.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
           <selected id="0" />
