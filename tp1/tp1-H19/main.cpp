@@ -112,23 +112,37 @@ void quickSortRdmPivot(vector<hugeInt> & vec, int low, int high, const int seuil
 }
 
 void triParDenombrement(vector<hugeInt> & vec) {
-	const int max_value = *max_element(vec.begin(), vec.end());
-	vector<int> valueCounters;
+	const hugeInt max_value = *max_element(vec.begin(), vec.end());
+	cout << "Max value: " << max_value << endl;
+	vector<hugeInt> valueCounters;
+	cout << valueCounters.max_size();
+	if(max_value > vec.max_size() - 1) {
+		
+		cout << "Max value is too big for denombrement" << endl;
+		return;
+	}
+	
 	vector<hugeInt> sortedVector;
 	// initialize a vector the size of the largest element 
-	for (int i = 0; i < max_value; i++) {
-		valueCounters.push_back(0);
-	}
-	// fill the new vector with the amount of each number from the initial set
-	for (unsigned int i = 0; i < vec.size(); i++) {
-		valueCounters[vec[i] - 1] ++;
-	}
-	// reconstruct the initial vector with the counted values 
-	for (unsigned int i = 0; i < valueCounters.size(); i++) {
-		for (int j = 0; j < valueCounters[i]; j++) {
-			sortedVector.push_back(i + 1);
+	try {
+		for (int i = 0; i < max_value + 1; i++) {
+			valueCounters.push_back(0);
 		}
-	}
+		// fill the new vector with the amount of each number from the initial set
+		for (unsigned int i = 0; i < vec.size(); i++) {
+			valueCounters[vec[i]] ++;
+		}
+		// reconstruct the initial vector with the counted values 
+		for (unsigned int i = 0; i < valueCounters.size(); i++) {
+			for (int j = 0; j < valueCounters[i]; j++) {
+				sortedVector.push_back(i);
+			}
+		}
+	} catch (const std::bad_alloc& e) {
+        cout << "Allocation failed: " << e.what() << '\n';
+		cout << "Max value too big for denombrement" << endl;
+    }
+	
 	vec = sortedVector;
 }
 
@@ -196,22 +210,26 @@ vector<double> compareAll(vector<hugeInt> init_vec) {
 	double timeInMs;
 	vector<hugeInt> vec;
 	vector<double> times;
+
 	// counting
 	vec = init_vec;
-	//timeInMs = sortNumbers(vec, COUNTING);
-	timeInMs = 10;
+	timeInMs = sortNumbers(vec, COUNTING);
 	times.push_back(timeInMs);
 	cout << "Elapsed time (counting): " << timeInMs << "ms" << endl;
+	
+	/*
 	// Quicksort
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, QUICK);
     times.push_back(timeInMs);
     cout << "Elapsed time (quick): " << timeInMs << "ms" << endl;
+	
 	//QuicksortSeuil
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, QUICK_SEUIL, DEFAULT_SEUIL);
     times.push_back(timeInMs);
-    //cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
+    cout << "Elapsed time (quickSeuil): " << timeInMs << "ms" << endl;
+	
 	// Quicksort Random Seuil
 	double mean = 0;
 	for (int i = 0; i < 10; i++) {
@@ -222,8 +240,10 @@ vector<double> compareAll(vector<hugeInt> init_vec) {
 	}
 	mean /= 10;
     times.push_back(mean);
-    //cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
-    return times;
+    cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
+    */
+	return times;
+	
 }
 
 struct SeuilTime {
@@ -446,9 +466,9 @@ int main(int argc, const char * argv[]) {
 	// uncomment to run all quicksorts with seuils and write to seuil.csv
 	//seuilExperiment();
 	// uncomment to run all sorts for comparison (using DEFAULT_SEUIL)
-	//gatherResults();
+	gatherResults();
 	//uncomment to use interface for TP
-	useInterface(argv);
+	//useInterface(argv);
 
 	return 0;
 }
