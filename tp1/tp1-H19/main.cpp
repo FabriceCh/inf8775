@@ -13,7 +13,7 @@ using namespace std;
 
 typedef unsigned long long int hugeInt;
 
-const unsigned int DEFAULT_SEUIL = 10;
+const unsigned int DEFAULT_SEUIL = 4;
 const string COUNTING			= "counting";
 const string QUICK				= "quick";
 const string QUICK_SEUIL		= "quickSeuil";
@@ -113,35 +113,22 @@ void quickSortRdmPivot(vector<hugeInt> & vec, int low, int high, const int seuil
 
 void triParDenombrement(vector<hugeInt> & vec) {
 	const hugeInt max_value = *max_element(vec.begin(), vec.end());
-	cout << "Max value: " << max_value << endl;
 	vector<hugeInt> valueCounters;
-	cout << valueCounters.max_size();
-	if(max_value > vec.max_size() - 1) {
-		
-		cout << "Max value is too big for denombrement" << endl;
-		return;
-	}
-	
 	vector<hugeInt> sortedVector;
 	// initialize a vector the size of the largest element 
-	try {
-		for (int i = 0; i < max_value + 1; i++) {
-			valueCounters.push_back(0);
+	for (int i = 0; i < max_value + 1; i++) {
+		valueCounters.push_back(0);
+	}
+	// fill the new vector with the amount of each number from the initial set
+	for (unsigned int i = 0; i < vec.size(); i++) {
+		valueCounters[vec[i]] ++;
+	}
+	// reconstruct the initial vector with the counted values 
+	for (unsigned int i = 0; i < valueCounters.size(); i++) {
+		for (int j = 0; j < valueCounters[i]; j++) {
+			sortedVector.push_back(i);
 		}
-		// fill the new vector with the amount of each number from the initial set
-		for (unsigned int i = 0; i < vec.size(); i++) {
-			valueCounters[vec[i]] ++;
-		}
-		// reconstruct the initial vector with the counted values 
-		for (unsigned int i = 0; i < valueCounters.size(); i++) {
-			for (int j = 0; j < valueCounters[i]; j++) {
-				sortedVector.push_back(i);
-			}
-		}
-	} catch (const std::bad_alloc& e) {
-        cout << "Allocation failed: " << e.what() << '\n';
-		cout << "Max value too big for denombrement" << endl;
-    }
+	}
 	
 	vec = sortedVector;
 }
@@ -213,11 +200,15 @@ vector<double> compareAll(vector<hugeInt> init_vec) {
 
 	// counting
 	vec = init_vec;
-	timeInMs = sortNumbers(vec, COUNTING);
+	try {
+		timeInMs = sortNumbers(vec, COUNTING);
+	} catch (const std::bad_alloc& e) {
+		timeInMs = 0;
+	}
 	times.push_back(timeInMs);
 	cout << "Elapsed time (counting): " << timeInMs << "ms" << endl;
 	
-	/*
+	
 	// Quicksort
 	vec = init_vec;
 	timeInMs = sortNumbers(vec, QUICK);
@@ -241,7 +232,7 @@ vector<double> compareAll(vector<hugeInt> init_vec) {
 	mean /= 10;
     times.push_back(mean);
     cout << "Mean elapsed time (quickRdmSeuil): " << mean << "ms" << endl;
-    */
+    
 	return times;
 	
 }
