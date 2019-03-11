@@ -11,6 +11,7 @@
 #include <random>
 #include <limits>
 
+
 using namespace std;
 
 typedef std::numeric_limits< double > dbl;
@@ -124,7 +125,6 @@ Solution resolveGlouton(Problem problem) {
 			Pi.min = previousMax;
 			Pi.max = Pi.min + ratios[i].ratio / sumRatio;
 			partitions.push_back(Pi);
-
 			previousMax = Pi.max;
 		}
 
@@ -148,6 +148,7 @@ Solution resolveGlouton(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
+    vector<vector<vector<double> > > array3D;
 
 	return solution;
 }
@@ -155,14 +156,61 @@ Solution resolveGlouton(Problem problem) {
 /*
 	PROGRAMMATION DYNAMIQUE
 */
-
-// TODO
+Solution resolveDynProg(Problem problem){
+    Solution solution;
+    chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+    vector<Resto> restos = problem.restos;
+    int n = restos.size();
+    unsigned int **D;
+    D = new  unsigned int*[n];
+    for (int i = 0; i < n; ++i)
+       D[i] = new unsigned int[n];
+    while (solution.restosIDs.size() != problem.capacity) {
+        // 1 comme valeur frontiere
+        for(unsigned int i = 1; i < n - 1; i++){
+            for (unsigned int j = 0; j < restos[i].q; j++){
+                D[i ,j] = max(restos[i].r + D[i - 1, j-restos[i].q], D[i - 1, j]);
+                solution.restosIDs.push_back(restos[i].id);
+            }
+        }
+    }
+    for (int i = 0; i < n; ++i)
+        delete [] D[i];
+    delete [] D;
+}
 
 /*
 	HEURISTIQUE D'AMÉLIORATION LOCALE
 */
 
-// TODO
+int findRevenue(vector<int> restosIDs, vector<Resto> restos){
+    int revenue = 0;
+    for(int i = 0; i < restosIDs.size(); i++){
+        for(int j = 0; j < restos.size(); j++){
+            if(restos[j].id == restosIDs[i]){
+                revenue += restos[j].r;
+            }
+        }
+    }
+    return revenue;
+}
+
+Solution resolveHeu(Problem problem_1, Problem problem_2){
+    Solution s_0 = resolveGlouton(problem_1);
+    Solution s_i;
+    int objFct = findRevenue(s_0.restosIDs, problem_1.restos);
+    int newObjFct;
+    for(unsigned int i = 0; i < problem_1.restos.size(); i++){
+        if(problem_2.restos[i].q < problem_1.capacity){
+            problem_1.restos[i] = problem_2.restos[i];
+            s_i = resolveGlouton(problem_1);
+            newObjFct = findRevenue(s_i.restosIDs, problem_1.restos);
+            if (newObjFct > objFct){
+                objFct = newObjFct;
+            }
+        }
+    }
+}
 
 void useInterface(const char * argv[]) {
 	// argv[1]: filename argv[2]: algoName argv[3-4]: show sorted / show time
@@ -232,12 +280,21 @@ void showSolution(Solution sol, bool showR, Problem problem) {
 }
 
 int main(int argc, const char * argv[]) {
-
-	Problem problem = readProblem("C:/Users/fabrice/Desktop/0TRAVAUX/INF8775/tp2/exemplaires/WC-100-10-06.txt");
-	showProblemData(problem);
-	Solution solution = resolveGlouton(problem);
-	showSolution(solution, true, problem);
-
-	system("pause");
+	Problem problem_6 = readProblem(R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-06.txt)");
+    Problem problem_7 = readProblem(R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-07.txt)");
+	//	showProblemData(problem);
+	Solution solutionGlouton = resolveGlouton(problem_6);
+	Solution solutionDynProg = resolveDynProg(problem_6);
+//	Solution solutionHeu = resolveHeu(problem_6, problem_7);
+    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+    cout << "Glouton" << endl;
+    showSolution(solutionGlouton, true, problem_6);
+//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+//    cout << "Programmation dynamique" << endl;
+//    showSolution(solutionDynProg, true, problem_6);
+//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+//    cout << "Heuristique" << endl;
+//    showSolution(solutionHeu, true, problem_6);
+    system("pause");
 	return 0;
 }

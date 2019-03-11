@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/c/Users/Joel/Documents/inf8775/tp2/main.cpp
+iostream
+-
+fstream
+-
+utility
+-
+string
+-
+cstdio
+-
+algorithm
+-
+vector
+-
+list
+-
+ctime
+-
+chrono
+-
+random
+-
+limits
+-
+
