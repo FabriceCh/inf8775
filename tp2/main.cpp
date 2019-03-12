@@ -30,6 +30,7 @@ struct Problem {
 
 struct Solution {
 	vector<int> restosIDs;
+	int totalChickens;
 	double elapsedTime;
 };
 
@@ -80,12 +81,12 @@ Problem readProblem(string filename) {
 */
 
 struct Ratio {
-	int id;
+	Resto resto;
 	double ratio;
 };
 
 struct Partition {
-	int id;
+	Resto resto;
 	double min;
 	double max;
 };
@@ -101,7 +102,7 @@ Solution resolveGlouton(Problem problem) {
 	for (unsigned int i = 0; i < restos.size(); i++) {
 		Ratio Ri;
 		Ri.ratio = restos[i].r / restos[i].q;
-		Ri.id = restos[i].id;
+		Ri.resto = restos[i];
 		sumRatio += Ri.ratio;
 		ratios.push_back(Ri);
 	}
@@ -114,14 +115,15 @@ Solution resolveGlouton(Problem problem) {
 	mt19937 generator(rd());
 	uniform_real_distribution<double> uniform(0.0, 1.0);
 
-	while (solution.restosIDs.size() != problem.capacity) {
-	//while (solution.restosIDs.size() != 5) {
+	solution.totalChickens = 0;
+
+	while (ratios.size() > 0 && solution.totalChickens < problem.capacity) {
 		// create partitions for all remaining restaurants
 		vector<Partition> partitions;
 		double previousMax = 0;
 		for (unsigned int i = 0; i < ratios.size(); i++) {
 			Partition Pi;
-			Pi.id = ratios[i].id;
+			Pi.resto = ratios[i].resto;
 			Pi.min = previousMax;
 			Pi.max = Pi.min + ratios[i].ratio / sumRatio;
 			partitions.push_back(Pi);
@@ -130,15 +132,23 @@ Solution resolveGlouton(Problem problem) {
 
 		// randomly select the emplacement with the probabilistic partitions
 		double choice = uniform(generator);
-		cout << choice << endl;
+		//cout << choce << endl;
 
 		for (int i = 0; i < partitions.size(); i++) {
 			// when the chosen partition is found
 			if (choice <= partitions[i].max && choice >= partitions[i].min) {
-				// add the id to the solution
-				solution.restosIDs.push_back(partitions[i].id);
-				// remove the restaurant from the possibilities
-				ratios.erase(ratios.begin() + i);
+				//if the selected resto surpasses the capacity
+				if(solution.totalChickens + partitions[i].resto.q > problem.capacity) {
+					// remove the restaurant from the possibilities
+					ratios.erase(ratios.begin() + i);
+				} else {
+					// add the id to the solution
+					solution.restosIDs.push_back(partitions[i].resto.id);
+					// remove the restaurant from the possibilities
+					ratios.erase(ratios.begin() + i);
+					// add the chickens to the total
+					solution.totalChickens += partitions[i].resto.q;
+				}
 				break;
 			}
 		}
@@ -296,5 +306,8 @@ int main(int argc, const char * argv[]) {
 //    cout << "Heuristique" << endl;
 //    showSolution(solutionHeu, true, problem_6);
     system("pause");
+	#ifdef _WIN64
+	system("pause");
+	#endif
 	return 0;
 }
