@@ -174,11 +174,21 @@ Solution resolveDynProg(Problem problem){
     unsigned int **D;
     D = new  unsigned int*[n];
     for (int i = 0; i < n; ++i)
-       D[i] = new unsigned int[n];
+    	D[i] = new unsigned int[n];
     while (solution.restosIDs.size() != problem.capacity) {
         // 1 comme valeur frontiere
         for(unsigned int i = 1; i < n - 1; i++){
             for (unsigned int j = 0; j < restos[i].q; j++){
+
+				// replace unexistant value with 0
+				int trickyIndex = j-restos[i].q;
+				unsigned int* addTerm;
+				if(trickyIndex < 0) {
+					addTerm = D[i - 1, trickyIndex];
+				} else {
+					addTerm = 0;
+				}
+
                 D[i ,j] = max(restos[i].r + D[i - 1, j-restos[i].q], D[i - 1, j]);
                 solution.restosIDs.push_back(restos[i].id);
             }
@@ -290,8 +300,15 @@ void showSolution(Solution sol, bool showR, Problem problem) {
 }
 
 int main(int argc, const char * argv[]) {
-	Problem problem_6 = readProblem(R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-06.txt)");
-    Problem problem_7 = readProblem(R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-07.txt)");
+	string joelPathP6 = R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-06.txt)";
+	string joelPathP7 = R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-07.txt)";
+
+	string fabPathP6 = "./exemplaires/WC-100-10-06.txt";
+	string fabPathP7 = "./exemplaires/WC-100-10-07.txt";
+
+
+	Problem problem_6 = readProblem(fabPathP6);
+    Problem problem_7 = readProblem(fabPathP7);
 	//	showProblemData(problem);
 	Solution solutionGlouton = resolveGlouton(problem_6);
 	Solution solutionDynProg = resolveDynProg(problem_6);
