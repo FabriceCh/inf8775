@@ -17,20 +17,20 @@ using namespace std;
 typedef std::numeric_limits< double > dbl;
 
 struct Resto {
-	int id; // numero du resto
-	int r; // revenu du resto
-	int q; // coût du resto
+	unsigned int id; // numero du resto
+	unsigned int r; // revenu du resto
+	unsigned int q; // coût du resto
 };
 
 struct Problem {
-	int N; // nombre de resto
-	int capacity;
+	unsigned int N; // nombre de resto
+	unsigned int capacity;
 	vector<Resto> restos;
 };
 
 struct Solution {
 	vector<int> restosIDs;
-	int totalChickens;
+	unsigned int totalChickens;
 	double elapsedTime;
 };
 
@@ -45,7 +45,7 @@ void showSolution(Solution sol, bool showR, Problem problem);
 void showProblemData(Problem problem) {
 	cout << "N: " << problem.N << endl;
 	cout << "capacity: " << problem.capacity << endl;
-	for (int j = 0; j < problem.restos.size(); j++) {
+	for (unsigned int j = 0; j < problem.restos.size(); j++) {
 		Resto i = problem.restos[j];
 		cout << "resto i: " << i.id << ", r: " << i.r << ", q: " << i.q << endl;
 	}
@@ -76,7 +76,7 @@ Problem readProblem(string filename) {
 }
 
 
-/* 
+/*
 	GLOUTON PROBABILISTE
 */
 
@@ -85,11 +85,13 @@ struct Ratio {
 	double ratio;
 };
 
-struct Partition {
-	Resto resto;
-	double min;
-	double max;
-};
+int getSumRevenu(vector<Ratio> ratios) {
+	int sumRevenu = 0;
+	for (unsigned int i = 0; i < ratios.size(); i++) {
+		sumRevenu += ratios[i].resto.r;
+	}
+	return sumRevenu;
+}
 
 Solution resolveGlouton(Problem problem) {
 	Solution solution;
@@ -118,39 +120,30 @@ Solution resolveGlouton(Problem problem) {
 	solution.totalChickens = 0;
 
 	while (ratios.size() > 0 && solution.totalChickens < problem.capacity) {
-		// create partitions for all remaining restaurants
-		vector<Partition> partitions;
-		double previousMax = 0;
-		for (unsigned int i = 0; i < ratios.size(); i++) {
-			Partition Pi;
-			Pi.resto = ratios[i].resto;
-			Pi.min = previousMax;
-			Pi.max = Pi.min + ratios[i].ratio / sumRatio;
-			partitions.push_back(Pi);
-			previousMax = Pi.max;
+		// choose a restaurant
+		int tryIdx;
+		int sumRevenu = getSumRevenu(ratios);
+		int chosenIdx;
+		while (true) {
+			tryIdx = (int)(uniform(generator) * ratios.size());
+			if (uniform(generator) < (ratios[tryIdx].ratio)) {
+				chosenIdx = tryIdx;
+				break;
+			};
 		}
 
-		// randomly select the emplacement with the probabilistic partitions
-		double choice = uniform(generator);
-		//cout << choce << endl;
-
-		for (int i = 0; i < partitions.size(); i++) {
-			// when the chosen partition is found
-			if (choice <= partitions[i].max && choice >= partitions[i].min) {
-				//if the selected resto surpasses the capacity
-				if(solution.totalChickens + partitions[i].resto.q > problem.capacity) {
-					// remove the restaurant from the possibilities
-					ratios.erase(ratios.begin() + i);
-				} else {
-					// add the id to the solution
-					solution.restosIDs.push_back(partitions[i].resto.id);
-					// remove the restaurant from the possibilities
-					ratios.erase(ratios.begin() + i);
-					// add the chickens to the total
-					solution.totalChickens += partitions[i].resto.q;
-				}
-				break;
-			}
+		//if the selected resto surpasses the capacity
+		if (solution.totalChickens + ratios[chosenIdx].resto.q > problem.capacity) {
+			// remove the restaurant from the possibilities
+			ratios.erase(ratios.begin() + chosenIdx);
+		}
+		else {
+			// add the id to the solution
+			solution.restosIDs.push_back(ratios[chosenIdx].resto.id);
+			// remove the restaurant from the possibilities
+			ratios.erase(ratios.begin() + chosenIdx);
+			// add the chickens to the total
+			solution.totalChickens += ratios[chosenIdx].resto.q;
 		}
 
 	}
@@ -158,7 +151,7 @@ Solution resolveGlouton(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
-    vector<vector<vector<double> > > array3D;
+	vector<vector<vector<double> > > array3D;
 
 	return solution;
 }
@@ -166,70 +159,67 @@ Solution resolveGlouton(Problem problem) {
 /*
 	PROGRAMMATION DYNAMIQUE
 */
-Solution resolveDynProg(Problem problem){
-    Solution solution;
-    chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
-    vector<Resto> restos = problem.restos;
-    int n = restos.size();
-    unsigned int **D;
-    D = new  unsigned int*[n];
-    for (int i = 0; i < n; ++i)
-    	D[i] = new unsigned int[n];
-    while (solution.restosIDs.size() != problem.capacity) {
-        // 1 comme valeur frontiere
-        for(unsigned int i = 1; i < n - 1; i++){
-            for (unsigned int j = 0; j < restos[i].q; j++){
+Solution resolveDynProg(Problem problem) {
+	Solution solution;
+	chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+	vector<Resto> restos = problem.restos;
+	unsigned int n = restos.size();
+	vector<vector<unsigned int>> D;
+	while (solution.restosIDs.size() != problem.capacity) {
+		// 1 comme valeur frontiere
+		for (unsigned int i = 1; i < n - 1; i++) {
+			for (unsigned int j = 0; j < restos[i].q; j++) {
 
 				// replace unexistant value with 0
-				int trickyIndex = j-restos[i].q;
-				unsigned int* addTerm;
-				if(trickyIndex < 0) {
-					addTerm = D[i - 1, trickyIndex];
-				} else {
+				unsigned int trickyIndex = j - restos[i].q;
+				unsigned int addTerm;
+				if (trickyIndex > 0) {
+					addTerm = D[i - 1][trickyIndex];
+				}
+				else {
 					addTerm = 0;
 				}
 
-                D[i ,j] = max(restos[i].r + D[i - 1, j-restos[i].q], D[i - 1, j]);
-                solution.restosIDs.push_back(restos[i].id);
-            }
-        }
-    }
-    for (int i = 0; i < n; ++i)
-        delete [] D[i];
-    delete [] D;
+				D[i][j] = max(restos[i].r + addTerm, D[i - 1][j]);
+				solution.restosIDs.push_back(restos[i].id);
+			}
+		}
+	}
+
+	return solution;
 }
 
 /*
 	HEURISTIQUE D'AMÉLIORATION LOCALE
 */
-
-int findRevenue(vector<int> restosIDs, vector<Resto> restos){
-    int revenue = 0;
-    for(int i = 0; i < restosIDs.size(); i++){
-        for(int j = 0; j < restos.size(); j++){
-            if(restos[j].id == restosIDs[i]){
-                revenue += restos[j].r;
-            }
-        }
-    }
-    return revenue;
+int findRevenue(vector<int> restosIDs, vector<Resto> restos) {
+	int revenue = 0;
+	for (unsigned int i = 0; i < restosIDs.size(); i++) {
+		for (unsigned int j = 0; j < restos.size(); j++) {
+			if (restos[j].id == restosIDs[i]) {
+				revenue += restos[j].r;
+			}
+		}
+	}
+	return revenue;
 }
 
-Solution resolveHeu(Problem problem_1, Problem problem_2){
-    Solution s_0 = resolveGlouton(problem_1);
-    Solution s_i;
-    int objFct = findRevenue(s_0.restosIDs, problem_1.restos);
-    int newObjFct;
-    for(unsigned int i = 0; i < problem_1.restos.size(); i++){
-        if(problem_2.restos[i].q < problem_1.capacity){
-            problem_1.restos[i] = problem_2.restos[i];
-            s_i = resolveGlouton(problem_1);
-            newObjFct = findRevenue(s_i.restosIDs, problem_1.restos);
-            if (newObjFct > objFct){
-                objFct = newObjFct;
-            }
-        }
-    }
+Solution resolveHeu(Problem problem_1, Problem problem_2) {
+	Solution s_0 = resolveGlouton(problem_1);
+	Solution s_i;
+	int objFct = findRevenue(s_0.restosIDs, problem_1.restos);
+	int newObjFct;
+	for (unsigned int i = 0; i < problem_1.restos.size(); i++) {
+		if (problem_2.restos[i].q < problem_1.capacity) {
+			problem_1.restos[i] = problem_2.restos[i];
+			s_i = resolveGlouton(problem_1);
+			newObjFct = findRevenue(s_i.restosIDs, problem_1.restos);
+			if (newObjFct > objFct) {
+				objFct = newObjFct;
+			}
+		}
+	}
+	return s_i;
 }
 
 void useInterface(const char * argv[]) {
@@ -265,15 +255,15 @@ void showSolution(Solution sol, bool showR, Problem problem) {
 	cout << "Solution found: " << endl;
 	cout << "elapsed time: " << sol.elapsedTime << endl;
 	cout << "emplacements: " << endl;
-	for (int i = 0; i < sol.restosIDs.size(); i++) {
+	for (unsigned int i = 0; i < sol.restosIDs.size(); i++) {
 		cout << sol.restosIDs[i] << " ";
 	}
 	if (showR) {
 		int global_q = 0;
 		int global_r = 0;
-		for (int i = 0; i < sol.restosIDs.size(); i++) {
+		for (unsigned int i = 0; i < sol.restosIDs.size(); i++) {
 
-			for (int j = 0; j < problem.restos.size(); j++) {
+			for (unsigned int j = 0; j < problem.restos.size(); j++) {
 				if (problem.restos[j].id == sol.restosIDs[i]) {
 					global_q += problem.restos[j].q;
 					global_r += problem.restos[j].r;
@@ -281,11 +271,11 @@ void showSolution(Solution sol, bool showR, Problem problem) {
 				}
 			}
 
-			
+
 		}
 		double global_R;
 		try {
-			 global_R = global_r / (double)global_q;
+			global_R = global_r / (double)global_q;
 		}
 		catch (exception e) {
 			cout << "division by 0 lol" << endl;
@@ -305,26 +295,28 @@ int main(int argc, const char * argv[]) {
 
 	string fabPathP6 = "./exemplaires/WC-100-10-06.txt";
 	string fabPathP7 = "./exemplaires/WC-100-10-07.txt";
+	string fabPathP6_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-06.txt)";
+	string fabPathP7_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-07.txt)";
 
 
-	Problem problem_6 = readProblem(fabPathP6);
-    Problem problem_7 = readProblem(fabPathP7);
+	Problem problem_6 = readProblem(fabPathP6_2);
+	Problem problem_7 = readProblem(fabPathP7_2);
 	//	showProblemData(problem);
 	Solution solutionGlouton = resolveGlouton(problem_6);
 	Solution solutionDynProg = resolveDynProg(problem_6);
-//	Solution solutionHeu = resolveHeu(problem_6, problem_7);
-    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-    cout << "Glouton" << endl;
-    showSolution(solutionGlouton, true, problem_6);
-//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-//    cout << "Programmation dynamique" << endl;
-//    showSolution(solutionDynProg, true, problem_6);
-//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-//    cout << "Heuristique" << endl;
-//    showSolution(solutionHeu, true, problem_6);
-    system("pause");
-	#ifdef _WIN64
+	//	Solution solutionHeu = resolveHeu(problem_6, problem_7);
+	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	cout << "Glouton" << endl;
+	//showSolution(solutionGlouton, true, problem_6);
+	//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//    cout << "Programmation dynamique" << endl;
+	    showSolution(solutionDynProg, true, problem_6);
+	//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//    cout << "Heuristique" << endl;
+	//    showSolution(solutionHeu, true, problem_6);
 	system("pause");
-	#endif
+#ifdef _WIN64
+	system("pause");
+#endif
 	return 0;
 }
