@@ -151,7 +151,6 @@ Solution resolveGlouton(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
-	vector<vector<vector<double> > > array3D;
 
 	return solution;
 }
@@ -229,7 +228,7 @@ Solution resolveDynProg(Problem problem) {
 	
 	for (int i = N - 1; i >= 0; i--) {
 		if (i == 0) {
-			if (j - restos[i].q > 0) {
+			if (j >= restos[i].q) {
 				solution.restosIDs.push_back(restos[i].id);
 				cout << "hey hey i = 1 " << endl;
 			}
@@ -250,7 +249,10 @@ Solution resolveDynProg(Problem problem) {
 		}
 
 	}
-	
+	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = finish - start;
+	solution.elapsedTime = elapsed.count() * 1000;
+
 	return solution;
 }
 
