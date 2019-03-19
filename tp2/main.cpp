@@ -160,21 +160,21 @@ Solution resolveGlouton(Problem problem) {
 	PROGRAMMATION DYNAMIQUE
 */
 
-void printArray( vector<vector<unsigned int>> D, Problem p) {
+void printArray(const vector<vector<unsigned int>> D, Problem p) {
 	cout << "Array:" << endl;
 	cout << "\t";
-	for (unsigned int y = 0; y < p.capacity; y++) {
-		if (y + 1 < 10) {
-			cout << y + 1 << "  ";
+	for (unsigned int y = 0; y < D[0].size(); y++) {
+		if (y  < 10) {
+			cout << y  << "  ";
 		} else {
-			cout << y + 1 << " ";
+			cout << y  << " ";
 		}
 		
 	}
 	cout << endl << endl;
-	for (unsigned int x = 0; x < p.restos.size(); x++) {
+	for (unsigned int x = 0; x < D.size(); x++) {
 		cout << x + 1 << "\t";
-		for (unsigned int y = 0; y < p.capacity; y++) {
+		for (unsigned int y = 0; y < D[x].size(); y++) {
 			
 			if (D[x][y] < 10) {
 				cout << D[x][y] << "  ";
@@ -192,37 +192,65 @@ Solution resolveDynProg(Problem problem) {
 	Solution solution;
 	chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	vector<Resto> restos = problem.restos;
-	unsigned int n = restos.size();
+	const unsigned int N = restos.size();
 	
 	// Initialisation du tableau
-	vector<vector<unsigned int>> D(n);
+	vector<vector<unsigned int>> D(N);
 	for (auto&& x : D)
 		x.resize(problem.capacity + 1);
 
-	// remplissage du tableau
-	for (unsigned int i = 0; i < n; i++) {
-		for (unsigned int j = 0; j < problem.capacity; j++) {
-			if (i == 0) {
+	// Remplissage du tableau
+	for (unsigned int i = 0; i < N; i++) {
+		for (unsigned int j = 0; j < problem.capacity + 1; j++) {
+			if (j == 0) {
+				D[i][j] = 0;
+			}
+			else if (i == 0) {
 				if (restos[i].q <= j)
 					D[i][j] = restos[i].r;
 			} else {
-				// replace unexistant value with 0
-				int trickyIndex = j - restos[i].q;
-				unsigned int addTerm = 0;
-				if (trickyIndex > 0) {
-					addTerm = D[i - 1][trickyIndex];
+				// manage unexistant values
+				if (j < restos[i].q) {
+					D[i][j] =D[i - 1][j];
 				}
-
-				D[i][j] = max(restos[i].r + addTerm, D[i - 1][j]);
-				//solution.restosIDs.push_back(restos[i].id);
+				else {
+					D[i][j] = max(restos[i].r + D[i - 1][j - restos[i].q], D[i - 1][j]);
+				}
+				
 			}
 			
 		}
 	}
 	printArray(D, problem);
+	
+	// Trouver la solution à partir du tableau
+	int j = problem.capacity;
+	solution.totalChickens = 0;
+	
+	for (int i = N - 1; i >= 0; i--) {
+		if (i == 0) {
+			if (j - restos[i].q > 0) {
+				solution.restosIDs.push_back(restos[i].id);
+				cout << "hey hey i = 1 " << endl;
+			}
+		}
+		else {
+			
+			cout <<"i and j: " << i << " and " << j << " D[i][j]: " << D[i][j] << " and D[i - 1][j]: " << D[i - 1][j] << endl;
+			if (D[i][j] != D[i - 1][j]) {
+				if (j - restos[i].q >= 0) {
+					// add the id to the solution
+					solution.restosIDs.push_back(restos[i].id);
+					// add the chickens to the total
+					solution.totalChickens += restos[i].q;
+					// remove the restaurant from the possibilities
+					j -= restos[i].q;
+				}
+			}
+		}
 
-	// trouver la solution à partir du tableau
-
+	}
+	
 	return solution;
 }
 
