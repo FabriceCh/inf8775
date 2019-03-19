@@ -17,13 +17,13 @@ using namespace std;
 typedef std::numeric_limits< double > dbl;
 
 struct Resto {
-	unsigned int id; // numero du resto
-	unsigned int r; // revenu du resto
-	unsigned int q; // coût du resto
+	unsigned int id;	// Numero du resto
+	unsigned int r;		// Revenu du resto
+	unsigned int q;		// Coût du resto
 };
 
 struct Problem {
-	unsigned int N; // nombre de resto
+	unsigned int N;		// Nombre de resto
 	unsigned int capacity;
 	vector<Resto> restos;
 };
@@ -98,7 +98,7 @@ Solution resolveGlouton(Problem problem) {
 	chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 
 	vector<Resto> restos = problem.restos;
-	// compute the ratios of all restaurant emplacements
+	// Compute the ratios of all restaurant emplacements
 	vector<Ratio> ratios;
 	double sumRatio = 0;
 	for (unsigned int i = 0; i < restos.size(); i++) {
@@ -108,7 +108,7 @@ Solution resolveGlouton(Problem problem) {
 		sumRatio += Ri.ratio;
 		ratios.push_back(Ri);
 	}
-	// predictable behaviour (always the same numbers)
+	// Predictable behaviour (always the same numbers)
 	//unsigned seed = 126534;
 	//mt19937 generator(seed);
 
@@ -120,7 +120,7 @@ Solution resolveGlouton(Problem problem) {
 	solution.totalChickens = 0;
 
 	while (ratios.size() > 0 && solution.totalChickens < problem.capacity) {
-		// choose a restaurant
+		// Choose a restaurant
 		int tryIdx;
 		int sumRevenu = getSumRevenu(ratios);
 		int chosenIdx;
@@ -138,11 +138,11 @@ Solution resolveGlouton(Problem problem) {
 			ratios.erase(ratios.begin() + chosenIdx);
 		}
 		else {
-			// add the id to the solution
+			// Add the id to the solution
 			solution.restosIDs.push_back(ratios[chosenIdx].resto.id);
-			// remove the restaurant from the possibilities
+			// Remove the restaurant from the possibilities
 			ratios.erase(ratios.begin() + chosenIdx);
-			// add the chickens to the total
+			// Add the chickens to the total
 			solution.totalChickens += ratios[chosenIdx].resto.q;
 		}
 
@@ -208,7 +208,7 @@ Solution resolveDynProg(Problem problem) {
 				if (restos[i].q <= j)
 					D[i][j] = restos[i].r;
 			} else {
-				// manage unexistant values
+				// Manage unexistant values
 				if (j < restos[i].q) {
 					D[i][j] =D[i - 1][j];
 				}
@@ -220,7 +220,7 @@ Solution resolveDynProg(Problem problem) {
 			
 		}
 	}
-	printArray(D, problem);
+	//printArray(D, problem);
 	
 	// Trouver la solution à partir du tableau
 	int j = problem.capacity;
@@ -230,19 +230,17 @@ Solution resolveDynProg(Problem problem) {
 		if (i == 0) {
 			if (j >= restos[i].q) {
 				solution.restosIDs.push_back(restos[i].id);
-				cout << "hey hey i = 1 " << endl;
 			}
 		}
 		else {
 			
-			cout <<"i and j: " << i << " and " << j << " D[i][j]: " << D[i][j] << " and D[i - 1][j]: " << D[i - 1][j] << endl;
 			if (D[i][j] != D[i - 1][j]) {
 				if (j - restos[i].q >= 0) {
-					// add the id to the solution
+					// Add the id to the solution
 					solution.restosIDs.push_back(restos[i].id);
-					// add the chickens to the total
+					// Add the chickens to the total
 					solution.totalChickens += restos[i].q;
-					// remove the restaurant from the possibilities
+					// Update j
 					j -= restos[i].q;
 				}
 			}
@@ -320,6 +318,7 @@ void useInterface(const char * argv[]) {
 }
 
 void showSolution(Solution sol, bool showR, Problem problem) {
+	cout << "Problem params: " << "capacity: " << problem.capacity << " N: " << problem.N << endl;
 	cout << "Solution found: " << endl;
 	cout << "elapsed time: " << sol.elapsedTime << endl;
 	cout << "emplacements: " << endl;
@@ -371,14 +370,14 @@ int main(int argc, const char * argv[]) {
 	Problem problem_7 = readProblem(fabPathP7_2);
 	//	showProblemData(problem);
 	Solution solutionGlouton = resolveGlouton(problem_6);
-	Solution solutionDynProg = resolveDynProg(problem_6);
+	Solution solutionDynProg = resolveDynProg(problem_7);
 	//	Solution solutionHeu = resolveHeu(problem_6, problem_7);
 	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 	cout << "Glouton" << endl;
 	//showSolution(solutionGlouton, true, problem_6);
 	//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 	//    cout << "Programmation dynamique" << endl;
-	    showSolution(solutionDynProg, true, problem_6);
+	    showSolution(solutionDynProg, true, problem_7);
 	//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 	//    cout << "Heuristique" << endl;
 	//    showSolution(solutionHeu, true, problem_6);
