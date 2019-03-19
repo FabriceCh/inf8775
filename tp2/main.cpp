@@ -159,32 +159,69 @@ Solution resolveGlouton(Problem problem) {
 /*
 	PROGRAMMATION DYNAMIQUE
 */
+
+void printArray( vector<vector<unsigned int>> D, Problem p) {
+	cout << "Array:" << endl;
+	cout << "\t";
+	for (unsigned int y = 0; y < p.capacity; y++) {
+		if (y + 1 < 10) {
+			cout << y + 1 << "  ";
+		} else {
+			cout << y + 1 << " ";
+		}
+		
+	}
+	cout << endl << endl;
+	for (unsigned int x = 0; x < p.restos.size(); x++) {
+		cout << x + 1 << "\t";
+		for (unsigned int y = 0; y < p.capacity; y++) {
+			
+			if (D[x][y] < 10) {
+				cout << D[x][y] << "  ";
+			}
+			else {
+				cout << D[x][y] << " ";
+			}
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
 Solution resolveDynProg(Problem problem) {
 	Solution solution;
 	chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	vector<Resto> restos = problem.restos;
 	unsigned int n = restos.size();
-	vector<vector<unsigned int>> D;
-	while (solution.restosIDs.size() != problem.capacity) {
-		// 1 comme valeur frontiere
-		for (unsigned int i = 1; i < n - 1; i++) {
-			for (unsigned int j = 0; j < restos[i].q; j++) {
+	
+	// Initialisation du tableau
+	vector<vector<unsigned int>> D(n);
+	for (auto&& x : D)
+		x.resize(problem.capacity + 1);
 
+	// remplissage du tableau
+	for (unsigned int i = 0; i < n; i++) {
+		for (unsigned int j = 0; j < problem.capacity; j++) {
+			if (i == 0) {
+				if (restos[i].q <= j)
+					D[i][j] = restos[i].r;
+			} else {
 				// replace unexistant value with 0
-				unsigned int trickyIndex = j - restos[i].q;
-				unsigned int addTerm;
+				int trickyIndex = j - restos[i].q;
+				unsigned int addTerm = 0;
 				if (trickyIndex > 0) {
 					addTerm = D[i - 1][trickyIndex];
 				}
-				else {
-					addTerm = 0;
-				}
 
 				D[i][j] = max(restos[i].r + addTerm, D[i - 1][j]);
-				solution.restosIDs.push_back(restos[i].id);
+				//solution.restosIDs.push_back(restos[i].id);
 			}
+			
 		}
 	}
+	printArray(D, problem);
+
+	// trouver la solution à partir du tableau
 
 	return solution;
 }
@@ -192,6 +229,7 @@ Solution resolveDynProg(Problem problem) {
 /*
 	HEURISTIQUE D'AMÉLIORATION LOCALE
 */
+
 int findRevenue(vector<int> restosIDs, vector<Resto> restos) {
 	int revenue = 0;
 	for (unsigned int i = 0; i < restosIDs.size(); i++) {
