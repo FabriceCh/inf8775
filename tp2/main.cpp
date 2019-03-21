@@ -14,7 +14,13 @@
 
 using namespace std;
 
+/*
+	Structures et fonctions globales
+*/
+
 typedef std::numeric_limits< double > dbl;
+
+const double MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS = 120000.0;
 
 struct Resto {
 	unsigned int id;	// Numero du resto
@@ -29,7 +35,7 @@ struct Problem {
 };
 
 struct Solution {
-	vector<int> restosIDs;
+	vector<Resto> restos;
 	unsigned int totalChickens;
 	double elapsedTime;
 };
@@ -85,12 +91,12 @@ struct Ratio {
 	double ratio;
 };
 
-int getSumRevenu(vector<Ratio> ratios) {
-	int sumRevenu = 0;
+int getSumRatio(vector<Ratio> ratios) {
+	int sumRatio = 0;
 	for (unsigned int i = 0; i < ratios.size(); i++) {
-		sumRevenu += ratios[i].resto.r;
+		sumRatio += ratios[i].ratio;
 	}
-	return sumRevenu;
+	return sumRatio;
 }
 
 Solution resolveGlouton(Problem problem) {
@@ -103,7 +109,7 @@ Solution resolveGlouton(Problem problem) {
 	double sumRatio = 0;
 	for (unsigned int i = 0; i < restos.size(); i++) {
 		Ratio Ri;
-		Ri.ratio = restos[i].r / restos[i].q;
+		Ri.ratio = (double) restos[i].r / (double) restos[i].q;
 		Ri.resto = restos[i];
 		sumRatio += Ri.ratio;
 		ratios.push_back(Ri);
@@ -119,31 +125,32 @@ Solution resolveGlouton(Problem problem) {
 
 	solution.totalChickens = 0;
 
-	while (ratios.size() > 0 && solution.totalChickens < problem.capacity) {
+	while ((ratios.size() > 0) && (solution.totalChickens < problem.capacity)) {
 		// Choose a restaurant
+		// Note: cette façon est plus efficace que la solution naïve qu'on avait au départ qui créait des partitions pour chaque resto
 		int tryIdx;
-		int sumRevenu = getSumRevenu(ratios);
-		int chosenIdx;
+		int sumRatio = getSumRatio(ratios);
+		int chosenIndex;
 		while (true) {
-			tryIdx = (int)(uniform(generator) * ratios.size());
-			if (uniform(generator) < (ratios[tryIdx].ratio)) {
-				chosenIdx = tryIdx;
+			tryIdx = (int)(uniform(generator) * (ratios.size()-1));
+			if (uniform(generator) < ((double) ratios[tryIdx].ratio / (double) sumRatio)) {
+				chosenIndex = tryIdx;
 				break;
 			};
 		}
-
+		
 		//if the selected resto surpasses the capacity
-		if (solution.totalChickens + ratios[chosenIdx].resto.q > problem.capacity) {
+		if ((solution.totalChickens + ratios[chosenIndex].resto.q) > problem.capacity) {
 			// remove the restaurant from the possibilities
-			ratios.erase(ratios.begin() + chosenIdx);
+			ratios.erase(ratios.begin() + chosenIndex);
 		}
 		else {
 			// Add the id to the solution
-			solution.restosIDs.push_back(ratios[chosenIdx].resto.id);
-			// Remove the restaurant from the possibilities
-			ratios.erase(ratios.begin() + chosenIdx);
+			solution.restos.push_back(ratios[chosenIndex].resto);
 			// Add the chickens to the total
-			solution.totalChickens += ratios[chosenIdx].resto.q;
+			solution.totalChickens += ratios[chosenIndex].resto.q;
+			// Remove the restaurant from the possibilities
+			ratios.erase(ratios.begin() + chosenIndex);
 		}
 
 	}
@@ -151,9 +158,10 @@ Solution resolveGlouton(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
-
+	
 	return solution;
 }
+
 
 /*
 	PROGRAMMATION DYNAMIQUE
@@ -229,7 +237,7 @@ Solution resolveDynProg(Problem problem) {
 	for (int i = N - 1; i >= 0; i--) {
 		if (i == 0) {
 			if (j >= restos[i].q) {
-				solution.restosIDs.push_back(restos[i].id);
+				solution.restos.push_back(restos[i]);
 			}
 		}
 		else {
@@ -237,7 +245,7 @@ Solution resolveDynProg(Problem problem) {
 			if (D[i][j] != D[i - 1][j]) {
 				if (j - restos[i].q >= 0) {
 					// Add the id to the solution
-					solution.restosIDs.push_back(restos[i].id);
+					solution.restos.push_back(restos[i]);
 					// Add the chickens to the total
 					solution.totalChickens += restos[i].q;
 					// Update j
@@ -250,43 +258,80 @@ Solution resolveDynProg(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
-
+	
 	return solution;
 }
+
 
 /*
 	HEURISTIQUE D'AMÉLIORATION LOCALE
 */
 
-int findRevenue(vector<int> restosIDs, vector<Resto> restos) {
+int findRevenue(const Solution & solution) {
 	int revenue = 0;
-	for (unsigned int i = 0; i < restosIDs.size(); i++) {
-		for (unsigned int j = 0; j < restos.size(); j++) {
-			if (restos[j].id == restosIDs[i]) {
-				revenue += restos[j].r;
-			}
-		}
+	for (unsigned int i = 0; i < solution.restos.size(); i++) {
+		revenue += solution.restos[i].r;
 	}
 	return revenue;
 }
 
-Solution resolveHeu(Problem problem_1, Problem problem_2) {
-	Solution s_0 = resolveGlouton(problem_1);
-	Solution s_i;
-	int objFct = findRevenue(s_0.restosIDs, problem_1.restos);
-	int newObjFct;
-	for (unsigned int i = 0; i < problem_1.restos.size(); i++) {
-		if (problem_2.restos[i].q < problem_1.capacity) {
-			problem_1.restos[i] = problem_2.restos[i];
-			s_i = resolveGlouton(problem_1);
-			newObjFct = findRevenue(s_i.restosIDs, problem_1.restos);
-			if (newObjFct > objFct) {
-				objFct = newObjFct;
+vector<Resto> findUnsusedResto(const Problem & problem, const Solution & solution) {
+
+	vector<int> sortedIds;
+	for (unsigned int i = 0; i < solution.restos.size(); i++) {
+		sortedIds.push_back(solution.restos[i].id);
+	}
+
+	// Sort the ids
+	sort(sortedIds.begin(), sortedIds.end());
+	// Parse ids backwards to delete the right resto in unused restos
+	vector<Resto> unusedRestos = problem.restos;
+	for (int i = sortedIds.size() - 1; i >=0 ; i--) {
+		unusedRestos.erase(unusedRestos.begin() + sortedIds[i] - 1);
+	}
+	return unusedRestos;
+}
+
+Solution resolveHeu(Problem problem) {
+	chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+	chrono::high_resolution_clock::time_point finish;
+	std::chrono::duration<double> elapsed;
+
+	Solution solution = resolveGlouton(problem);
+	int currentRevenue = findRevenue(solution);
+
+	cout << "initial glouton solution revenue:" << currentRevenue << endl;
+
+	bool shouldContinue = true;
+	vector<Resto> unusedRestos = findUnsusedResto(problem, solution);
+	while (shouldContinue) {
+		shouldContinue = false;
+		for (unsigned int i = 0; i < solution.restos.size(); i++) {
+			for (unsigned int j = 0; j < unusedRestos.size(); j++) {
+				Resto newResto = unusedRestos[j];
+				Resto curResto = solution.restos[i];
+				if (newResto.r > curResto.r && (solution.totalChickens - curResto.q + newResto.q) < problem.capacity) {
+					swap(solution.restos[i], unusedRestos[j]);
+					shouldContinue = true;
+				}
 			}
 		}
+		finish = std::chrono::high_resolution_clock::now();
+		elapsed = finish - start;
+		if (elapsed.count() * 1000 > MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS) {
+			shouldContinue = false;
+		}
 	}
-	return s_i;
+
+
+	
+	return solution;
 }
+
+
+/*
+	AFFICHAGE ET INTERFACE
+*/
 
 void useInterface(const char * argv[]) {
 	// argv[1]: filename argv[2]: algoName argv[3-4]: show sorted / show time
@@ -322,23 +367,15 @@ void showSolution(Solution sol, bool showR, Problem problem) {
 	cout << "Solution found: " << endl;
 	cout << "elapsed time: " << sol.elapsedTime << endl;
 	cout << "emplacements: " << endl;
-	for (unsigned int i = 0; i < sol.restosIDs.size(); i++) {
-		cout << sol.restosIDs[i] << " ";
+	for (unsigned int i = 0; i < sol.restos.size(); i++) {
+		cout << sol.restos[i].id << " ";
 	}
 	if (showR) {
 		int global_q = 0;
 		int global_r = 0;
-		for (unsigned int i = 0; i < sol.restosIDs.size(); i++) {
-
-			for (unsigned int j = 0; j < problem.restos.size(); j++) {
-				if (problem.restos[j].id == sol.restosIDs[i]) {
-					global_q += problem.restos[j].q;
-					global_r += problem.restos[j].r;
-					break;
-				}
-			}
-
-
+		for (unsigned int i = 0; i < sol.restos.size(); i++) {
+			global_q += sol.restos[i].q;
+			global_r += sol.restos[i].r;
 		}
 		double global_R;
 		try {
@@ -369,18 +406,18 @@ int main(int argc, const char * argv[]) {
 	Problem problem_6 = readProblem(fabPathP6_2);
 	Problem problem_7 = readProblem(fabPathP7_2);
 	//	showProblemData(problem);
-	Solution solutionGlouton = resolveGlouton(problem_6);
-	Solution solutionDynProg = resolveDynProg(problem_7);
-	//	Solution solutionHeu = resolveHeu(problem_6, problem_7);
-	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	cout << "Glouton" << endl;
+	//Solution solutionGlouton = resolveGlouton(problem_6);
+	//Solution solutionDynProg = resolveDynProg(problem_6);
+	Solution solutionHeu = resolveHeu(problem_6);
+	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//cout << "Glouton" << endl;
 	//showSolution(solutionGlouton, true, problem_6);
-	//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	//    cout << "Programmation dynamique" << endl;
-	    showSolution(solutionDynProg, true, problem_7);
-	//    cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	//    cout << "Heuristique" << endl;
-	//    showSolution(solutionHeu, true, problem_6);
+	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//cout << "Programmation dynamique" << endl;
+	//showSolution(solutionDynProg, true, problem_6);
+	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//cout << "Heuristique" << endl;
+	showSolution(solutionHeu, true, problem_6);
 	system("pause");
 #ifdef _WIN64
 	system("pause");
