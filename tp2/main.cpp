@@ -324,7 +324,7 @@ Solution resolveHeu(Problem problem) {
 	}
 
 
-	
+	solution.elapsedTime = elapsed.count() * 1000;
 	return solution;
 }
 
@@ -404,7 +404,7 @@ int main(int argc, const char * argv[]) {
 
 
 	Problem problem_6 = readProblem(fabPathP6_2);
-	//Problem problem_7 = readProblem(fabPathP7_2);
+	Problem problem_7 = readProblem(fabPathP7_2);
 	//	showProblemData(problem);
 	//Solution solutionGlouton = resolveGlouton(problem_6);
 	//Solution solutionDynProg = resolveDynProg(problem_6);
