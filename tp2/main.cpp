@@ -20,7 +20,10 @@ using namespace std;
 
 typedef std::numeric_limits< double > dbl;
 
-const double MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS = 120000.0;
+const double MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS = 120000.0; // 2 minutes
+const string GLOUTON = "glouton";
+const string PROGRAMMATION_DYNAMIQUE = "progdyn";
+const string AMELIORATION_LOCALE = "local";
 
 struct Resto {
 	unsigned int id;	// Numero du resto
@@ -45,8 +48,8 @@ void showProblemData(Problem problem);
 Problem readProblem(string filename);
 void useInterface(const char * argv[]);
 Solution resolveGlouton(Problem problem);
-void showSolution(Solution sol, bool showR, Problem problem);
-
+void showDebugSolution(Solution sol, bool showR, Problem problem);
+Solution solve(Problem & problem, string & algo);
 
 void showProblemData(Problem problem) {
 	cout << "N: " << problem.N << endl;
@@ -128,9 +131,8 @@ Solution resolveGlouton(Problem problem) {
 	while ((ratios.size() > 0) && (solution.totalChickens < problem.capacity)) {
 		// Choose a restaurant
 		// Note: cette façon est plus efficace que la solution naïve qu'on avait au départ qui créait des partitions pour chaque resto
-		int tryIdx;
+		int tryIdx, chosenIndex;
 		int sumRatio = getSumRatio(ratios);
-		int chosenIndex;
 		while (true) {
 			tryIdx = (int)(uniform(generator) * (ratios.size()-1));
 			if (uniform(generator) < ((double) ratios[tryIdx].ratio / (double) sumRatio)) {
@@ -167,7 +169,7 @@ Solution resolveGlouton(Problem problem) {
 	PROGRAMMATION DYNAMIQUE
 */
 
-void printArray(const vector<vector<unsigned int>> D, Problem p) {
+void printArray(const vector<vector<unsigned int>> D) {
 	cout << "Array:" << endl;
 	cout << "\t";
 	for (unsigned int y = 0; y < D[0].size(); y++) {
@@ -228,7 +230,7 @@ Solution resolveDynProg(Problem problem) {
 			
 		}
 	}
-	//printArray(D, problem);
+	//printArray(D);
 	
 	// Trouver la solution à partir du tableau
 	int j = problem.capacity;
@@ -306,6 +308,7 @@ Solution resolveHeu(Problem problem) {
 	vector<Resto> unusedRestos = findUnsusedResto(problem, solution);
 	while (shouldContinue) {
 		shouldContinue = false;
+		// Try 1 to 1 swaps for each possible combination 
 		for (unsigned int i = 0; i < solution.restos.size(); i++) {
 			for (unsigned int j = 0; j < unusedRestos.size(); j++) {
 				Resto newResto = unusedRestos[j];
@@ -316,13 +319,13 @@ Solution resolveHeu(Problem problem) {
 				}
 			}
 		}
+		// Contrainte de temps
 		finish = std::chrono::high_resolution_clock::now();
 		elapsed = finish - start;
 		if (elapsed.count() * 1000 > MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS) {
 			shouldContinue = false;
 		}
 	}
-
 
 	solution.elapsedTime = elapsed.count() * 1000;
 	return solution;
@@ -348,21 +351,24 @@ void useInterface(const char * argv[]) {
 		showTime = true;
 	}
 
-	// TODO: lire l'exemplaire et le résoudre avec le bon algo et en mesurant le temps
-
+	Problem problem = readProblem(fileName);
+	Solution solution = solve(problem, algo);
 
 
 
 	if (showSolution) {
-		// TODO: show the solution
+		for (unsigned int i = 0; i < solution.restos.size(); i++) {
+			cout << solution.restos[i].id << " ";
+		}
+		cout << endl;
 	}
 	if (showTime) {
 		// TODO: show the time
-		//cout << endl << elapsedTime << endl;
+		cout << solution.elapsedTime << endl;
 	}
 }
 
-void showSolution(Solution sol, bool showR, Problem problem) {
+void showDebugSolution(Solution sol, bool showR, Problem problem) {
 	cout << "Problem params: " << "capacity: " << problem.capacity << " N: " << problem.N << endl;
 	cout << "Solution found: " << endl;
 	cout << "elapsed time: " << sol.elapsedTime << endl;
@@ -393,6 +399,23 @@ void showSolution(Solution sol, bool showR, Problem problem) {
 	}
 }
 
+Solution solve(Problem & problem, string & algo) {
+	if (algo == GLOUTON) {
+		return resolveGlouton(problem);
+	}
+	else if (algo == PROGRAMMATION_DYNAMIQUE) {
+		return resolveDynProg(problem);
+	}
+	else if (algo == AMELIORATION_LOCALE) {
+		return resolveHeu(problem);
+	}
+	else {
+		Solution solution;
+		cout << "Please select a valid algo" << endl;
+		return solution;
+	}
+}
+
 int main(int argc, const char * argv[]) {
 	string joelPathP6 = R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-06.txt)";
 	string joelPathP7 = R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-07.txt)";
@@ -417,7 +440,7 @@ int main(int argc, const char * argv[]) {
 	//showSolution(solutionDynProg, true, problem_6);
 	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 	//cout << "Heuristique" << endl;
-	showSolution(solutionHeu, true, problem_6);
+	showDebugSolution(solutionHeu, true, problem_6);
 	system("pause");
 #ifdef _WIN64
 	system("pause");
