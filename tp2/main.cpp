@@ -445,9 +445,29 @@ string getFilename(string size, string serie, string exemplaire) {
 	return "./exemplaires/WC-" + size + "-" + serie + "-" + exemplaire + ".txt";
 }
 
+struct Sol10Glouton {
+	double timeMean;
+	double revenueMean;
+};
+
+Sol10Glouton solveGlouton10Times(Problem problem) {
+	double timeTotal = 0;
+	int revenueTotal = 0;
+	for (int i = 0; i < 10; i++) {
+		Solution sol = resolveGlouton(problem);
+		timeTotal += sol.elapsedTime;
+		revenueTotal += findRevenue(sol);
+	}
+	Sol10Glouton sol10Glouton;
+	sol10Glouton.timeMean = timeTotal / 10.0;
+	sol10Glouton.revenueMean = revenueTotal / 10.0;
+
+	return sol10Glouton;
+}
+
 void gatherResults() {
     Problem problem;
-	vector<Solution> solutions;
+	
 	vector<double> times;
 	vector<int> revenues;
 	vector<string> sizes = {"100", "1000", "10000"};
@@ -462,19 +482,31 @@ void gatherResults() {
 				filename = getFilename(sizes[i], series[j], exemplaires[k]);
 				problem = readProblem(filename);
 				cout << filename << endl;
-				Solution solGlouton = resolveGlouton(problem);
-				Solution solProgdyn = resolveDynProg(problem);
+				vector<Solution> solutionsGlouton;
+				
+
+				Sol10Glouton solGlouton = solveGlouton10Times(problem);
+				Solution solProgdyn;
+				int revenueProgDyn;
+				if(sizes[i] == "10000" && series[j] == "1000"){
+					solProgdyn.elapsedTime = 0;
+					revenueProgDyn =0;
+				}
+				else{
+					solProgdyn = resolveDynProg(problem);
+					revenueProgDyn = findRevenue(solProgdyn);
+				}
 				Solution solLocal = resolveHeu(problem);
 
 				cout << endl;
 				appendToComparisonCSV(
 					filename,
 					sizes[i],
-					solGlouton.elapsedTime,
+					solGlouton.timeMean,
 					solProgdyn.elapsedTime,
 					solLocal.elapsedTime,
-					findRevenue(solGlouton),
-					findRevenue(solProgdyn),
+					solGlouton.revenueMean,
+					revenueProgDyn,
 					findRevenue(solLocal)
 				);
 			}
