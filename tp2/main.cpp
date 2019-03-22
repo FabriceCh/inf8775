@@ -217,7 +217,8 @@ Solution resolveDynProg(Problem problem) {
 			else if (i == 0) {
 				if (restos[i].q <= j)
 					D[i][j] = restos[i].r;
-			} else {
+			} 
+			else {
 				// Manage unexistant values
 				if (j < restos[i].q) {
 					D[i][j] =D[i - 1][j];
@@ -416,6 +417,62 @@ Solution solve(Problem & problem, string & algo) {
 	}
 }
 
+void writeToComparisonCSV(){
+    std::ofstream comparaisonCSV;
+    comparaisonCSV.open("./results/comparaison.csv");
+    comparaisonCSV << "filename,size,timeGlouton,timeProgdyn,timeLocal,revenuGlouton,revenuProgdyn,revenuLocal\n";
+}
+
+void appendToComparisonCSV(string filename,
+							 int size,
+							 double timeGlouton,
+							 double timeProgdyn,
+							 double timeLocal,
+							 int revenuGlouton,
+							 int revenuProgdyn,
+							 int revenuLocal) {
+	std::ofstream comparaisonCSV;
+	comparaisonCSV.open("./results/comparaison.csv", ios_base::app);
+	comparaisonCSV << filename << "," 
+	<< size  << "," 
+	<< timeGlouton << "," 
+	<< timeProgdyn << "," 
+	<< timeLocal << "," 
+	<< revenuGlouton << "," 
+	<< revenuProgdyn << "," 
+	<< revenuLocal << "\n";
+}
+
+string getFilename(string size, string serie, string exemplaire) {
+	return "WC-" + size + "-" + serie + "-" + exemplaire + ".txt";
+}
+
+void gatherResults() {
+    Problem problem;
+	vector<Solution> solutions;
+	vector<double> times;
+	vector<int> revenues;
+	vector<string> sizes = {"100", "1000", "10000"};
+	vector<string> series = {"10", "100", "1000"};
+	vector<string> exemplaires = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10"};
+	string filename;
+	string numbers;
+	writeToComparisonCSV();	
+	for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+			for(int k = 0; k < 10; k++){
+				filename = getFilename(sizes[i], series[j], exemplaires[k]);
+				problem = readProblem(filename);
+				cout << filename << endl;
+				
+				cout << endl;
+				appendToComparisonCSV(filename, vec.size(), times[0], times [1], times [2], times[3]);
+			}
+            
+        }
+	}
+}
+
 int main(int argc, const char * argv[]) {
 	string joelPathP6 = R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-06.txt)";
 	string joelPathP7 = R"(C:\Users\Joel\Documents\inf8775\tp2\exemplaires\WC-100-10-07.txt)";
@@ -425,13 +482,14 @@ int main(int argc, const char * argv[]) {
 	string fabPathP6_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-06.txt)";
 	string fabPathP7_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-07.txt)";
 
+	useInterface(argv);
 
-	Problem problem_6 = readProblem(fabPathP6_2);
-	Problem problem_7 = readProblem(fabPathP7_2);
+	//Problem problem_6 = readProblem(fabPathP6_2);
+	//Problem problem_7 = readProblem(fabPathP7_2);
 	//	showProblemData(problem);
 	//Solution solutionGlouton = resolveGlouton(problem_6);
 	//Solution solutionDynProg = resolveDynProg(problem_6);
-	Solution solutionHeu = resolveHeu(problem_6);
+	//Solution solutionHeu = resolveHeu(problem_6);
 	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 	//cout << "Glouton" << endl;
 	//showSolution(solutionGlouton, true, problem_6);
@@ -440,8 +498,8 @@ int main(int argc, const char * argv[]) {
 	//showSolution(solutionDynProg, true, problem_6);
 	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
 	//cout << "Heuristique" << endl;
-	showDebugSolution(solutionHeu, true, problem_6);
-	system("pause");
+	//showDebugSolution(solutionHeu, true, problem_6);
+	//system("pause");
 #ifdef _WIN64
 	system("pause");
 #endif
