@@ -303,8 +303,6 @@ Solution resolveHeu(Problem problem) {
 	Solution solution = resolveGlouton(problem);
 	int currentRevenue = findRevenue(solution);
 
-	cout << "initial glouton solution revenue:" << currentRevenue << endl;
-
 	bool shouldContinue = true;
 	vector<Resto> unusedRestos = findUnsusedResto(problem, solution);
 	while (shouldContinue) {
@@ -419,12 +417,12 @@ Solution solve(Problem & problem, string & algo) {
 
 void writeToComparisonCSV(){
     std::ofstream comparaisonCSV;
-    comparaisonCSV.open("./results/comparaison.csv");
+    comparaisonCSV.open("./comparaison.csv");
     comparaisonCSV << "filename,size,timeGlouton,timeProgdyn,timeLocal,revenuGlouton,revenuProgdyn,revenuLocal\n";
 }
 
 void appendToComparisonCSV(string filename,
-							 int size,
+							 string size,
 							 double timeGlouton,
 							 double timeProgdyn,
 							 double timeLocal,
@@ -432,7 +430,7 @@ void appendToComparisonCSV(string filename,
 							 int revenuProgdyn,
 							 int revenuLocal) {
 	std::ofstream comparaisonCSV;
-	comparaisonCSV.open("./results/comparaison.csv", ios_base::app);
+	comparaisonCSV.open("./comparaison.csv", ios_base::app);
 	comparaisonCSV << filename << "," 
 	<< size  << "," 
 	<< timeGlouton << "," 
@@ -444,7 +442,7 @@ void appendToComparisonCSV(string filename,
 }
 
 string getFilename(string size, string serie, string exemplaire) {
-	return "WC-" + size + "-" + serie + "-" + exemplaire + ".txt";
+	return "./exemplaires/WC-" + size + "-" + serie + "-" + exemplaire + ".txt";
 }
 
 void gatherResults() {
@@ -464,9 +462,21 @@ void gatherResults() {
 				filename = getFilename(sizes[i], series[j], exemplaires[k]);
 				problem = readProblem(filename);
 				cout << filename << endl;
-				
+				Solution solGlouton = resolveGlouton(problem);
+				Solution solProgdyn = resolveDynProg(problem);
+				Solution solLocal = resolveHeu(problem);
+
 				cout << endl;
-				appendToComparisonCSV(filename, vec.size(), times[0], times [1], times [2], times[3]);
+				appendToComparisonCSV(
+					filename,
+					sizes[i],
+					solGlouton.elapsedTime,
+					solProgdyn.elapsedTime,
+					solLocal.elapsedTime,
+					findRevenue(solGlouton),
+					findRevenue(solProgdyn),
+					findRevenue(solLocal)
+				);
 			}
             
         }
@@ -482,7 +492,7 @@ int main(int argc, const char * argv[]) {
 	string fabPathP6_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-06.txt)";
 	string fabPathP7_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-07.txt)";
 
-	useInterface(argv);
+	gatherResults();
 
 	//Problem problem_6 = readProblem(fabPathP6_2);
 	//Problem problem_7 = readProblem(fabPathP7_2);
