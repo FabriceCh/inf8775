@@ -324,12 +324,14 @@ Solution resolveHeu(Problem problem) {
 								unsigned int oneToOneRevenue = currentRevenue - curResto_i.r + newResto_j.r;
 								unsigned int oneToTwoRevenue = currentRevenue - curResto_i.r + newResto_j.r + newResto_l.r;
 								unsigned int twoToOneRevenue = currentRevenue - curResto_i.r - curResto_k.r + newResto_j.r;
+								unsigned int twoToTwoRevenue = currentRevenue - curResto_i.r - curResto_k.r + newResto_j.r + newResto_l.r;
 
 								unsigned int oneToOneCapacity = solution.totalChickens - curResto_i.q + newResto_j.q;
 								unsigned int oneToTwoCapacity = solution.totalChickens - curResto_i.q + newResto_j.q + newResto_l.q;
 								unsigned int twoToOneCapacity = solution.totalChickens - curResto_i.q - curResto_k.q + newResto_j.q;
+								unsigned int twoToTwoCapacity = solution.totalChickens - curResto_i.q - curResto_k.q + newResto_j.q + newResto_l.q;
 
-								vector<unsigned int> potentialRevenues = { oneToOneRevenue, oneToTwoRevenue, twoToOneRevenue };
+								vector<unsigned int> potentialRevenues = { oneToOneRevenue, oneToTwoRevenue, twoToOneRevenue, twoToTwoRevenue };
 								sort(potentialRevenues.begin(), potentialRevenues.end());
 								
 								for (unsigned int r = 0; r < potentialRevenues.size(); r++) {
@@ -352,12 +354,20 @@ Solution resolveHeu(Problem problem) {
 										shouldContinue = true;
 										break;
 									}
-									else if (twoToOneCapacity <= problem.capacity) { // potentialRevenues[r] == twoToOneRevenue
+									else if (potentialRevenues[r] == twoToOneRevenue && twoToOneCapacity <= problem.capacity) { // potentialRevenues[r] == twoToOneRevenue
 										swap(solution.restos[i], unusedRestos[j]);
 										unusedRestos.push_back(curResto_k);
 										solution.restos.erase(solution.restos.begin() + k);
 										currentRevenue = twoToOneRevenue;
 										solution.totalChickens = twoToOneCapacity;
+										shouldContinue = true;
+										break;
+									}
+									else if (twoToTwoCapacity <= problem.capacity) { // potentialRevenues[r] == twoToTwoRevenue
+										swap(solution.restos[i], unusedRestos[j]);
+										swap(solution.restos[l], unusedRestos[k]);
+										currentRevenue = twoToTwoRevenue;
+										solution.totalChickens = twoToTwoCapacity;
 										shouldContinue = true;
 										break;
 									}
