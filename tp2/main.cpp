@@ -21,6 +21,7 @@ using namespace std;
 typedef std::numeric_limits< double > dbl;
 
 const double MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS = 120000.0; // 2 minutes
+const double MAX_SEARCH_TIME_TEST = 1000.0;
 const string GLOUTON = "glouton";
 const string PROGRAMMATION_DYNAMIQUE = "progdyn";
 const string AMELIORATION_LOCALE = "local";
@@ -94,8 +95,8 @@ struct Ratio {
 	double ratio;
 };
 
-int getSumRatio(vector<Ratio> ratios) {
-	int sumRatio = 0;
+double getSumRatio(vector<Ratio> ratios) {
+	double sumRatio = 0;
 	for (unsigned int i = 0; i < ratios.size(); i++) {
 		sumRatio += ratios[i].ratio;
 	}
@@ -109,12 +110,10 @@ Solution resolveGlouton(Problem problem) {
 	vector<Resto> restos = problem.restos;
 	// Compute the ratios of all restaurant emplacements
 	vector<Ratio> ratios;
-	double sumRatio = 0;
 	for (unsigned int i = 0; i < restos.size(); i++) {
 		Ratio Ri;
-		Ri.ratio = (double) restos[i].r / (double) restos[i].q;
+		Ri.ratio = (double)restos[i].r / (double)restos[i].q;
 		Ri.resto = restos[i];
-		sumRatio += Ri.ratio;
 		ratios.push_back(Ri);
 	}
 	// Predictable behaviour (always the same numbers)
@@ -132,15 +131,15 @@ Solution resolveGlouton(Problem problem) {
 		// Choose a restaurant
 		// Note: cette façon est plus efficace que la solution naïve qu'on avait au départ qui créait des partitions pour chaque resto
 		int tryIdx, chosenIndex;
-		int sumRatio = getSumRatio(ratios);
+		double sumRatio = getSumRatio(ratios);
 		while (true) {
-			tryIdx = (int)(uniform(generator) * (ratios.size()-1));
-			if (uniform(generator) < ((double) ratios[tryIdx].ratio / (double) sumRatio)) {
+			tryIdx = (int)(uniform(generator) * (ratios.size() - 1));
+			if (uniform(generator) < ((double)ratios[tryIdx].ratio / (double)sumRatio)) {
 				chosenIndex = tryIdx;
 				break;
 			};
 		}
-		
+
 		//if the selected resto surpasses the capacity
 		if ((solution.totalChickens + ratios[chosenIndex].resto.q) > problem.capacity) {
 			// remove the restaurant from the possibilities
@@ -160,7 +159,7 @@ Solution resolveGlouton(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
-	
+
 	return solution;
 }
 
@@ -173,18 +172,19 @@ void printArray(const vector<vector<unsigned int>> D) {
 	cout << "Array:" << endl;
 	cout << "\t";
 	for (unsigned int y = 0; y < D[0].size(); y++) {
-		if (y  < 10) {
-			cout << y  << "  ";
-		} else {
-			cout << y  << " ";
+		if (y < 10) {
+			cout << y << "  ";
 		}
-		
+		else {
+			cout << y << " ";
+		}
+
 	}
 	cout << endl << endl;
 	for (unsigned int x = 0; x < D.size(); x++) {
 		cout << x + 1 << "\t";
 		for (unsigned int y = 0; y < D[x].size(); y++) {
-			
+
 			if (D[x][y] < 10) {
 				cout << D[x][y] << "  ";
 			}
@@ -202,7 +202,7 @@ Solution resolveDynProg(Problem problem) {
 	chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 	vector<Resto> restos = problem.restos;
 	const unsigned int N = restos.size();
-	
+
 	// Initialisation du tableau
 	vector<vector<unsigned int>> D(N);
 	for (auto&& x : D)
@@ -217,26 +217,26 @@ Solution resolveDynProg(Problem problem) {
 			else if (i == 0) {
 				if (restos[i].q <= j)
 					D[i][j] = restos[i].r;
-			} 
+			}
 			else {
 				// Manage unexistant values
 				if (j < restos[i].q) {
-					D[i][j] =D[i - 1][j];
+					D[i][j] = D[i - 1][j];
 				}
 				else {
 					D[i][j] = max(restos[i].r + D[i - 1][j - restos[i].q], D[i - 1][j]);
 				}
-				
+
 			}
-			
+
 		}
 	}
 	//printArray(D);
-	
+
 	// Trouver la solution à partir du tableau
-	int j = problem.capacity;
+	unsigned int j = problem.capacity;
 	solution.totalChickens = 0;
-	
+
 	for (int i = N - 1; i >= 0; i--) {
 		if (i == 0) {
 			if (j >= restos[i].q) {
@@ -244,7 +244,7 @@ Solution resolveDynProg(Problem problem) {
 			}
 		}
 		else {
-			
+
 			if (D[i][j] != D[i - 1][j]) {
 				if (j - restos[i].q >= 0) {
 					// Add the id to the solution
@@ -261,7 +261,7 @@ Solution resolveDynProg(Problem problem) {
 	chrono::high_resolution_clock::time_point finish = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> elapsed = finish - start;
 	solution.elapsedTime = elapsed.count() * 1000;
-	
+
 	return solution;
 }
 
@@ -278,7 +278,7 @@ int findRevenue(const Solution & solution) {
 	return revenue;
 }
 
-vector<Resto> findUnsusedResto(const Problem & problem, const Solution & solution) {
+vector<Resto> findUnusedResto(const Problem & problem, const Solution & solution) {
 
 	vector<int> sortedIds;
 	for (unsigned int i = 0; i < solution.restos.size(); i++) {
@@ -289,7 +289,7 @@ vector<Resto> findUnsusedResto(const Problem & problem, const Solution & solutio
 	sort(sortedIds.begin(), sortedIds.end());
 	// Parse ids backwards to delete the right resto in unused restos
 	vector<Resto> unusedRestos = problem.restos;
-	for (int i = sortedIds.size() - 1; i >=0 ; i--) {
+	for (int i = sortedIds.size() - 1; i >= 0; i--) {
 		unusedRestos.erase(unusedRestos.begin() + sortedIds[i] - 1);
 	}
 	return unusedRestos;
@@ -304,26 +304,93 @@ Solution resolveHeu(Problem problem) {
 	int currentRevenue = findRevenue(solution);
 
 	bool shouldContinue = true;
-	vector<Resto> unusedRestos = findUnsusedResto(problem, solution);
+	vector<Resto> unusedRestos = findUnusedResto(problem, solution);
 	while (shouldContinue) {
 		shouldContinue = false;
-		// Try 1 to 1 swaps for each possible combination 
-		for (unsigned int i = 0; i < solution.restos.size(); i++) {
-			for (unsigned int j = 0; j < unusedRestos.size(); j++) {
-				Resto newResto = unusedRestos[j];
-				Resto curResto = solution.restos[i];
-				if (newResto.r > curResto.r && (solution.totalChickens - curResto.q + newResto.q) < problem.capacity) {
-					swap(solution.restos[i], unusedRestos[j]);
-					shouldContinue = true;
+		bool isTimerLow = true;
+		// Try 1-2 to 1-2 swaps for each possible combination 
+		for (unsigned int i = 0; i < solution.restos.size() && isTimerLow; i++ ) {
+			for (unsigned int j = 0; j < unusedRestos.size() && isTimerLow; j++ ) {
+				for (unsigned int k = 0; k < solution.restos.size() && isTimerLow; k++ ) {
+					if (k != i) {
+						for (unsigned int l = 0; l < unusedRestos.size() && isTimerLow; l++) {
+							if (k >= solution.restos.size() || j >= unusedRestos.size()) {
+								break;
+							}
+							if (l != j) {
+								
+								
+								Resto newResto_j = unusedRestos[j];
+								Resto newResto_l = unusedRestos[l];
+								Resto curResto_i = solution.restos[i];
+								Resto curResto_k = solution.restos[k];
+
+								unsigned int oneToOneRevenue = currentRevenue - curResto_i.r + newResto_j.r;
+								unsigned int oneToTwoRevenue = currentRevenue - curResto_i.r + newResto_j.r + newResto_l.r;
+								unsigned int twoToOneRevenue = currentRevenue - curResto_i.r - curResto_k.r + newResto_j.r;
+								unsigned int twoToTwoRevenue = currentRevenue - curResto_i.r - curResto_k.r + newResto_j.r + newResto_l.r;
+
+								unsigned int oneToOneCapacity = solution.totalChickens - curResto_i.q + newResto_j.q;
+								unsigned int oneToTwoCapacity = solution.totalChickens - curResto_i.q + newResto_j.q + newResto_l.q;
+								unsigned int twoToOneCapacity = solution.totalChickens - curResto_i.q - curResto_k.q + newResto_j.q;
+								unsigned int twoToTwoCapacity = solution.totalChickens - curResto_i.q - curResto_k.q + newResto_j.q + newResto_l.q;
+
+								vector<unsigned int> potentialRevenues = { oneToOneRevenue, oneToTwoRevenue, twoToOneRevenue, twoToTwoRevenue };
+								sort(potentialRevenues.begin(), potentialRevenues.end());
+
+								for (int r = potentialRevenues.size() - 1; r >= 0; r--) {
+									if (potentialRevenues[r] <= currentRevenue) {
+										break;
+									}
+									if (potentialRevenues[r] == oneToOneRevenue && oneToOneCapacity <= problem.capacity) { //oneToOne
+										swap(solution.restos[i], unusedRestos[j]);
+										currentRevenue = oneToOneRevenue;
+										solution.totalChickens = oneToOneCapacity;
+										shouldContinue = true;
+										break;
+									}
+									else if (potentialRevenues[r] == oneToTwoRevenue && oneToTwoCapacity <= problem.capacity) { //oneToTwo
+										swap(solution.restos[i], unusedRestos[j]);
+										solution.restos.push_back(newResto_l);
+										unusedRestos.erase(unusedRestos.begin() + l);
+										currentRevenue = oneToTwoRevenue;
+										solution.totalChickens = oneToTwoCapacity;
+										shouldContinue = true;
+										break;
+									}
+									else if (potentialRevenues[r] == twoToOneRevenue && twoToOneCapacity <= problem.capacity) { //twoToOne
+										swap(solution.restos[i], unusedRestos[j]);
+										unusedRestos.push_back(curResto_k);
+										solution.restos.erase(solution.restos.begin() + k);
+										currentRevenue = twoToOneRevenue;
+										solution.totalChickens = twoToOneCapacity;
+										shouldContinue = true;
+										break;
+									}
+									else if (potentialRevenues[r] == twoToTwoRevenue && twoToTwoCapacity <= problem.capacity) { // twoToTwo
+										swap(solution.restos[i], unusedRestos[j]);
+										swap(solution.restos[k], unusedRestos[l]);
+										currentRevenue = twoToTwoRevenue;
+										solution.totalChickens = twoToTwoCapacity;
+										shouldContinue = true;
+										break;
+									}
+								}
+								// Contrainte de temps
+								finish = std::chrono::high_resolution_clock::now();
+								elapsed = finish - start;
+								if (elapsed.count() * 1000 > MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS) {
+									shouldContinue = false;
+									isTimerLow = false;
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-		// Contrainte de temps
-		finish = std::chrono::high_resolution_clock::now();
-		elapsed = finish - start;
-		if (elapsed.count() * 1000 > MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS) {
-			shouldContinue = false;
-		}
+
 	}
 
 	solution.elapsedTime = elapsed.count() * 1000;
@@ -415,30 +482,30 @@ Solution solve(Problem & problem, string & algo) {
 	}
 }
 
-void writeToComparisonCSV(){
-    std::ofstream comparaisonCSV;
-    comparaisonCSV.open("./comparaison.csv");
-    comparaisonCSV << "filename,size,timeGlouton,timeProgdyn,timeLocal,revenuGlouton,revenuProgdyn,revenuLocal\n";
+void writeToComparisonCSV() {
+	std::ofstream comparaisonCSV;
+	comparaisonCSV.open("./comparaison.csv");
+	comparaisonCSV << "filename,size,timeGlouton,timeProgdyn,timeLocal,revenuGlouton,revenuProgdyn,revenuLocal\n";
 }
 
 void appendToComparisonCSV(string filename,
-							 string size,
-							 double timeGlouton,
-							 double timeProgdyn,
-							 double timeLocal,
-							 int revenuGlouton,
-							 int revenuProgdyn,
-							 int revenuLocal) {
+	string size,
+	double timeGlouton,
+	double timeProgdyn,
+	double timeLocal,
+	int revenuGlouton,
+	int revenuProgdyn,
+	int revenuLocal) {
 	std::ofstream comparaisonCSV;
 	comparaisonCSV.open("./comparaison.csv", ios_base::app);
-	comparaisonCSV << filename << "," 
-	<< size  << "," 
-	<< timeGlouton << "," 
-	<< timeProgdyn << "," 
-	<< timeLocal << "," 
-	<< revenuGlouton << "," 
-	<< revenuProgdyn << "," 
-	<< revenuLocal << "\n";
+	comparaisonCSV << filename << ","
+		<< size << ","
+		<< timeGlouton << ","
+		<< timeProgdyn << ","
+		<< timeLocal << ","
+		<< revenuGlouton << ","
+		<< revenuProgdyn << ","
+		<< revenuLocal << "\n";
 }
 
 string getFilename(string size, string serie, string exemplaire) {
@@ -466,33 +533,33 @@ Sol10Glouton solveGlouton10Times(Problem problem) {
 }
 
 void gatherResults() {
-    Problem problem;
-	
+	Problem problem;
+
 	vector<double> times;
 	vector<int> revenues;
-	vector<string> sizes = {"100", "1000", "10000"};
-	vector<string> series = {"10", "100", "1000"};
-	vector<string> exemplaires = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10"};
+	vector<string> sizes = { "100", "1000", "10000" };
+	vector<string> series = { "10", "100", "1000" };
+	vector<string> exemplaires = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10" };
 	string filename;
 	string numbers;
-	writeToComparisonCSV();	
-	for(int i = 0; i < 3; i++){
-        for(int j = 0; j < 3; j++){
-			for(int k = 0; k < 10; k++){
+	writeToComparisonCSV();
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			for (int k = 0; k < 10; k++) {
 				filename = getFilename(sizes[i], series[j], exemplaires[k]);
 				problem = readProblem(filename);
 				cout << filename << endl;
 				vector<Solution> solutionsGlouton;
-				
+
 
 				Sol10Glouton solGlouton = solveGlouton10Times(problem);
 				Solution solProgdyn;
 				int revenueProgDyn;
-				if(sizes[i] == "10000" && series[j] == "1000"){
+				if (sizes[i] == "10000" && series[j] == "1000") {
 					solProgdyn.elapsedTime = 0;
-					revenueProgDyn =0;
+					revenueProgDyn = 0;
 				}
-				else{
+				else {
 					solProgdyn = resolveDynProg(problem);
 					revenueProgDyn = findRevenue(solProgdyn);
 				}
@@ -510,8 +577,8 @@ void gatherResults() {
 					findRevenue(solLocal)
 				);
 			}
-            
-        }
+
+		}
 	}
 }
 
@@ -524,25 +591,25 @@ int main(int argc, const char * argv[]) {
 	string fabPathP6_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-06.txt)";
 	string fabPathP7_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-07.txt)";
 
-	gatherResults();
+	//useInterface(argv);
+	//gatherResults();
 
-	//Problem problem_6 = readProblem(fabPathP6_2);
-	//Problem problem_7 = readProblem(fabPathP7_2);
-	//	showProblemData(problem);
-	//Solution solutionGlouton = resolveGlouton(problem_6);
-	//Solution solutionDynProg = resolveDynProg(problem_6);
-	//Solution solutionHeu = resolveHeu(problem_6);
-	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	//cout << "Glouton" << endl;
-	//showSolution(solutionGlouton, true, problem_6);
-	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	//cout << "Programmation dynamique" << endl;
-	//showSolution(solutionDynProg, true, problem_6);
-	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	//cout << "Heuristique" << endl;
-	//showDebugSolution(solutionHeu, true, problem_6);
+	Problem problem = readProblem(fabPathP7_2);
+	Problem problem_7 = readProblem(fabPathP7_2);
+	Solution solutionGlouton = resolveGlouton(problem);
+	Solution solutionDynProg = resolveDynProg(problem);
+	Solution solutionHeu = resolveHeu(problem);
+	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	cout << "Glouton" << endl;
+	showDebugSolution(solutionGlouton, true, problem);
+	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	cout << "Programmation dynamique" << endl;
+	showDebugSolution(solutionDynProg, true, problem);
+	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	cout << "Heuristique" << endl;
+	showDebugSolution(solutionHeu, true, problem);
 	//system("pause");
-#ifdef _WIN64
+#ifdef _WIN32
 	system("pause");
 #endif
 	return 0;
