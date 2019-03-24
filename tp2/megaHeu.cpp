@@ -312,7 +312,7 @@ Solution resolveHeu(Problem problem) {
 				for (unsigned int k = 0; k < solution.restos.size(); k++) {
 					if (k != i) {
 						for (unsigned int l = 0; l < unusedRestos.size(); l++) {
-							if (k >= solution.restos.size()) {
+							if (k >= solution.restos.size() || j >= unusedRestos.size()) {
 								break;
 							}
 							if (l != j) {
@@ -334,18 +334,18 @@ Solution resolveHeu(Problem problem) {
 								vector<unsigned int> potentialRevenues = { oneToOneRevenue, oneToTwoRevenue, twoToOneRevenue, twoToTwoRevenue };
 								sort(potentialRevenues.begin(), potentialRevenues.end());
 								
-								for (unsigned int r = 0; r < potentialRevenues.size(); r++) {
+								for (int r = potentialRevenues.size() - 1; r >= 0 ; r--) {
 									if (potentialRevenues[r] <= currentRevenue) {
 										break;
 									}
-									if (potentialRevenues[r] == oneToOneRevenue && oneToOneCapacity <= problem.capacity) {
+									if (potentialRevenues[r] == oneToOneRevenue && oneToOneCapacity <= problem.capacity) { //oneToOne
 										swap(solution.restos[i], unusedRestos[j]);
 										currentRevenue = oneToOneRevenue;
 										solution.totalChickens = oneToOneCapacity;
 										shouldContinue = true;
 										break;
 									}
-									else if (potentialRevenues[r] == oneToTwoRevenue && oneToTwoCapacity <= problem.capacity) {
+									else if (potentialRevenues[r] == oneToTwoRevenue && oneToTwoCapacity <= problem.capacity) { //oneToTwo
 										swap(solution.restos[i], unusedRestos[j]);
 										solution.restos.push_back(newResto_l);
 										unusedRestos.erase(unusedRestos.begin() + l);
@@ -354,7 +354,7 @@ Solution resolveHeu(Problem problem) {
 										shouldContinue = true;
 										break;
 									}
-									else if (potentialRevenues[r] == twoToOneRevenue && twoToOneCapacity <= problem.capacity) { // potentialRevenues[r] == twoToOneRevenue
+									else if (potentialRevenues[r] == twoToOneRevenue && twoToOneCapacity <= problem.capacity) { //twoToOne
 										swap(solution.restos[i], unusedRestos[j]);
 										unusedRestos.push_back(curResto_k);
 										solution.restos.erase(solution.restos.begin() + k);
@@ -363,14 +363,20 @@ Solution resolveHeu(Problem problem) {
 										shouldContinue = true;
 										break;
 									}
-									else if (twoToTwoCapacity <= problem.capacity) { // potentialRevenues[r] == twoToTwoRevenue
+									else if (potentialRevenues[r] == twoToTwoRevenue && twoToTwoCapacity <= problem.capacity) { // twoToTwo
 										swap(solution.restos[i], unusedRestos[j]);
-										swap(solution.restos[l], unusedRestos[k]);
+										swap(solution.restos[k], unusedRestos[l]);
 										currentRevenue = twoToTwoRevenue;
 										solution.totalChickens = twoToTwoCapacity;
 										shouldContinue = true;
 										break;
 									}
+								}
+								// Contrainte de temps
+								finish = std::chrono::high_resolution_clock::now();
+								elapsed = finish - start;
+								if (elapsed.count() * 1000 > MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS) {
+									shouldContinue = false;
 								}
 							}
 						}
@@ -378,12 +384,7 @@ Solution resolveHeu(Problem problem) {
 				}
 			}
 		}
-		// Contrainte de temps
-		finish = std::chrono::high_resolution_clock::now();
-		elapsed = finish - start;
-		if (elapsed.count() * 1000 > MAXIMUM_LOCAL_HEURISTIC_SEARCH_TIME_IN_MS) {
-			shouldContinue = false;
-		}
+		
 	}
 
 	solution.elapsedTime = elapsed.count() * 1000;
