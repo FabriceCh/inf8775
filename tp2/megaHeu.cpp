@@ -307,11 +307,11 @@ Solution resolveHeu(Problem problem) {
 	while (shouldContinue) {
 		shouldContinue = false;
 		// Try 1-2 to 1-2 swaps for each possible combination 
-		for (unsigned int i = 0; i < solution.restos.size(); i++) {
-			for (unsigned int j = 0; j < unusedRestos.size(); j++) {
-				for (unsigned int k = 0; k < solution.restos.size(); k++) {
+		for (unsigned int i = 0; i < solution.restos.size(); i++ && shouldContinue) {
+			for (unsigned int j = 0; j < unusedRestos.size(); j++ && shouldContinue) {
+				for (unsigned int k = 0; k < solution.restos.size(); k++ && shouldContinue) {
 					if (k != i) {
-						for (unsigned int l = 0; l < unusedRestos.size(); l++) {
+						for (unsigned int l = 0; l < unusedRestos.size(); l++ && shouldContinue) {
 							if (k >= solution.restos.size() || j >= unusedRestos.size()) {
 								break;
 							}
@@ -586,23 +586,23 @@ int main(int argc, const char * argv[]) {
 	string fabPathP7_2 = R"(C:\Users\fabrice\Desktop\0TRAVAUX\INF8775\tp2\exemplaires\WC-100-10-07.txt)";
 
 	//useInterface(argv);
-	//gatherResults();
+	gatherResults();
 
-	Problem problem = readProblem(fabPathP7_2);
+	//Problem problem = readProblem(fabPathP7_2);
 	//Problem problem_7 = readProblem(fabPathP7_2);
 	//	showProblemData(problem);
-	Solution solutionGlouton = resolveGlouton(problem);
-	Solution solutionDynProg = resolveDynProg(problem);
-	Solution solutionHeu = resolveHeu(problem);
-	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	cout << "Glouton" << endl;
-	showDebugSolution(solutionGlouton, true, problem);
-	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	cout << "Programmation dynamique" << endl;
-	showDebugSolution(solutionDynProg, true, problem);
-	cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
-	cout << "Heuristique" << endl;
-	showDebugSolution(solutionHeu, true, problem);
+	//Solution solutionGlouton = resolveGlouton(problem);
+	//Solution solutionDynProg = resolveDynProg(problem);
+	//Solution solutionHeu = resolveHeu(problem);
+	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//cout << "Glouton" << endl;
+	//showDebugSolution(solutionGlouton, true, problem);
+	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//cout << "Programmation dynamique" << endl;
+	//showDebugSolution(solutionDynProg, true, problem);
+	//cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << endl;
+	//cout << "Heuristique" << endl;
+	//showDebugSolution(solutionHeu, true, problem);
 	//system("pause");
 #ifdef _WIN32
 	system("pause");
